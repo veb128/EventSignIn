@@ -1,0 +1,746 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>EventCheckIn</name>
+    </assembly>
+    <members>
+        <member name="T:EventCheckIn.Models.CheckInRecord">
+            <summary>A completed (or in-progress) attendee check-in.</summary>
+        </member>
+        <member name="P:EventCheckIn.Models.CheckInRecord.Answers">
+            <summary>Answers to the host-configured questions.</summary>
+        </member>
+        <member name="P:EventCheckIn.Models.CheckInRecord.DocumentNames">
+            <summary>Name of each scanned document, same order as DocumentFiles.</summary>
+        </member>
+        <member name="P:EventCheckIn.Models.CheckInRecord.Synced">
+            <summary>True once the host server has confirmed it received this check-in.</summary>
+        </member>
+        <member name="M:EventCheckIn.Models.EventConfig.CreateDefault">
+            <summary>Used until the kiosk has been paired and received the host's event.</summary>
+        </member>
+        <member name="T:EventCheckIn.Services.CheckInSession">
+            <summary>Holds the data for the attendee currently moving through the check-in flow.</summary>
+        </member>
+        <member name="P:EventCheckIn.Services.CheckInSession.IsFresh">
+            <summary>True until the attendee starts; the welcome form is rebuilt when fresh.</summary>
+        </member>
+        <member name="P:EventCheckIn.Services.CheckInSession.Email">
+            <summary>Best-effort email for the dashboard: the first answer that is validated as an email.</summary>
+        </member>
+        <member name="T:EventCheckIn.Services.CheckInStorage">
+            <summary>
+            Saves check-ins to the app data folder:
+              {AppData}/checkins/{id}/record.json, photo.jpg, doc_N.jpg, signature.png
+            </summary>
+        </member>
+        <member name="T:EventCheckIn.Services.EventConfigService">
+            <summary>
+            The event currently shown on the kiosk. Downloaded from the host and cached on the device,
+            so the kiosk keeps working with the last-known event while offline.
+            </summary>
+        </member>
+        <member name="P:EventCheckIn.Services.EventConfigService.LogoPath">
+            <summary>Local path of the cached logo, or null if the event has none.</summary>
+        </member>
+        <member name="E:EventCheckIn.Services.EventConfigService.Changed">
+            <summary>Raised (on the main thread) when a new event version has been downloaded.</summary>
+        </member>
+        <member name="M:EventCheckIn.Services.EventConfigService.RefreshAsync(EventCheckIn.Services.ServerConnection,System.Threading.CancellationToken)">
+            <summary>Fetches the host's event; downloads the logo if needed. Returns true if anything changed.</summary>
+        </member>
+        <member name="M:EventCheckIn.Services.EventConfigService.ResetToDefault">
+            <summary>Forget the host's event (e.g. after unpairing).</summary>
+        </member>
+        <member name="T:EventCheckIn.Services.ServerConnection">
+            <summary>
+            Talks to the EventCheckIn host on the local network. Nothing is sent to the internet:
+            the only addresses ever contacted are private LAN addresses found by discovery or typed in.
+            </summary>
+        </member>
+        <member name="M:EventCheckIn.Services.ServerConnection.DiscoverAsync(System.Threading.CancellationToken)">
+            <summary>Finds hosts: saved/known addresses first, then a sweep of each local /24 subnet.</summary>
+        </member>
+        <member name="M:EventCheckIn.Services.ServerConnection.ProbeAddressAsync(System.String,System.Threading.CancellationToken)">
+            <summary>Checks a typed-in address such as "192.168.1.20" or "192.168.1.20:5080".</summary>
+        </member>
+        <member name="T:EventCheckIn.Services.SyncService">
+            <summary>
+            Background sync: every check-in is saved on the kiosk first, then uploaded to the
+            host whenever it's reachable. Works offline; retries automatically.
+            </summary>
+            <inheritdoc/>
+        </member>
+        <member name="M:EventCheckIn.Services.SyncService.#ctor(EventCheckIn.Services.ServerConnection,EventCheckIn.Services.CheckInStorage,EventCheckIn.Services.EventConfigService)">
+            <summary>
+            Background sync: every check-in is saved on the kiosk first, then uploaded to the
+            host whenever it's reachable. Works offline; retries automatically.
+            </summary>
+        </member>
+        <member name="M:EventCheckIn.Services.SyncService.SyncNowAsync(System.Threading.CancellationToken)">
+            <summary>Uploads all pending check-ins. Safe to call any time (e.g. right after a check-in).</summary>
+        </member>
+        <member name="P:EventCheckIn.Services.SyncService.PendingCount">
+            <inheritdoc cref="F:EventCheckIn.Services.SyncService.pendingCount"/>
+        </member>
+        <member name="P:EventCheckIn.Services.SyncService.IsOnline">
+            <inheritdoc cref="F:EventCheckIn.Services.SyncService.isOnline"/>
+        </member>
+        <member name="P:EventCheckIn.Services.SyncService.StatusText">
+            <inheritdoc cref="F:EventCheckIn.Services.SyncService.statusText"/>
+        </member>
+        <member name="T:EventCheckIn.ViewModels.FieldInput">
+            <summary>One host-configured question on the welcome form, with its validation rules.</summary>
+            <inheritdoc/>
+        </member>
+        <member name="P:EventCheckIn.ViewModels.FieldInput.Text">
+            <inheritdoc cref="F:EventCheckIn.ViewModels.FieldInput.text"/>
+        </member>
+        <member name="P:EventCheckIn.ViewModels.FieldInput.SelectedOption">
+            <inheritdoc cref="F:EventCheckIn.ViewModels.FieldInput.selectedOption"/>
+        </member>
+        <member name="P:EventCheckIn.ViewModels.FieldInput.Error">
+            <inheritdoc cref="F:EventCheckIn.ViewModels.FieldInput.error"/>
+        </member>
+        <member name="M:EventCheckIn.ViewModels.FieldInput.OnTextChanged(System.String)">
+            <summary>Executes the logic for when <see cref="P:EventCheckIn.ViewModels.FieldInput.Text"/> just changed.</summary>
+            <param name="value">The new property value that was set.</param>
+            <remarks>This method is invoked right after the value of <see cref="P:EventCheckIn.ViewModels.FieldInput.Text"/> is changed.</remarks>
+        </member>
+        <member name="M:EventCheckIn.ViewModels.FieldInput.OnSelectedOptionChanged(System.String)">
+            <summary>Executes the logic for when <see cref="P:EventCheckIn.ViewModels.FieldInput.SelectedOption"/> just changed.</summary>
+            <param name="value">The new property value that was set.</param>
+            <remarks>This method is invoked right after the value of <see cref="P:EventCheckIn.ViewModels.FieldInput.SelectedOption"/> is changed.</remarks>
+        </member>
+        <member name="T:EventCheckIn.ViewModels.OptionItem">
+            <inheritdoc/>
+        </member>
+        <member name="P:EventCheckIn.ViewModels.OptionItem.IsSelected">
+            <inheritdoc cref="F:EventCheckIn.ViewModels.OptionItem.isSelected"/>
+        </member>
+        <member name="M:EventCheckIn.ViewModels.OptionItem.OnIsSelectedChanged(System.Boolean)">
+            <summary>Executes the logic for when <see cref="P:EventCheckIn.ViewModels.OptionItem.IsSelected"/> just changed.</summary>
+            <param name="value">The new property value that was set.</param>
+            <remarks>This method is invoked right after the value of <see cref="P:EventCheckIn.ViewModels.OptionItem.IsSelected"/> is changed.</remarks>
+        </member>
+        <member name="T:EventCheckIn.ViewModels.FieldTemplateSelector">
+            <summary>Picks the input control for each question type.</summary>
+        </member>
+        <member name="T:EventCheckIn.ViewModels.SettingsViewModel">
+            <inheritdoc/>
+            <inheritdoc/>
+            <inheritdoc/>
+            <inheritdoc/>
+            <inheritdoc/>
+            <inheritdoc/>
+        </member>
+        <member name="P:EventCheckIn.ViewModels.SettingsViewModel.KioskName">
+            <inheritdoc cref="F:EventCheckIn.ViewModels.SettingsViewModel.kioskName"/>
+        </member>
+        <member name="P:EventCheckIn.ViewModels.SettingsViewModel.ManualAddress">
+            <inheritdoc cref="F:EventCheckIn.ViewModels.SettingsViewModel.manualAddress"/>
+        </member>
+        <member name="P:EventCheckIn.ViewModels.SettingsViewModel.Pin">
+            <inheritdoc cref="F:EventCheckIn.ViewModels.SettingsViewModel.pin"/>
+        </member>
+        <member name="P:EventCheckIn.ViewModels.SettingsViewModel.SelectedServer">
+            <inheritdoc cref="F:EventCheckIn.ViewModels.SettingsViewModel.selectedServer"/>
+        </member>
+        <member name="P:EventCheckIn.ViewModels.SettingsViewModel.IsBusy">
+            <inheritdoc cref="F:EventCheckIn.ViewModels.SettingsViewModel.isBusy"/>
+        </member>
+        <member name="P:EventCheckIn.ViewModels.SettingsViewModel.Message">
+            <inheritdoc cref="F:EventCheckIn.ViewModels.SettingsViewModel.message"/>
+        </member>
+        <member name="P:EventCheckIn.ViewModels.SettingsViewModel.PairedWith">
+            <inheritdoc cref="F:EventCheckIn.ViewModels.SettingsViewModel.pairedWith"/>
+        </member>
+        <member name="P:EventCheckIn.ViewModels.SettingsViewModel.IsPaired">
+            <inheritdoc cref="F:EventCheckIn.ViewModels.SettingsViewModel.isPaired"/>
+        </member>
+        <member name="M:EventCheckIn.ViewModels.SettingsViewModel.OnKioskNameChanged(System.String)">
+            <summary>Executes the logic for when <see cref="P:EventCheckIn.ViewModels.SettingsViewModel.KioskName"/> just changed.</summary>
+            <param name="value">The new property value that was set.</param>
+            <remarks>This method is invoked right after the value of <see cref="P:EventCheckIn.ViewModels.SettingsViewModel.KioskName"/> is changed.</remarks>
+        </member>
+        <member name="F:EventCheckIn.ViewModels.SettingsViewModel.discoverCommand">
+            <summary>The backing field for <see cref="P:EventCheckIn.ViewModels.SettingsViewModel.DiscoverCommand"/>.</summary>
+        </member>
+        <member name="P:EventCheckIn.ViewModels.SettingsViewModel.DiscoverCommand">
+            <summary>Gets an <see cref="T:CommunityToolkit.Mvvm.Input.IAsyncRelayCommand"/> instance wrapping <see cref="M:EventCheckIn.ViewModels.SettingsViewModel.Discover"/>.</summary>
+        </member>
+        <member name="F:EventCheckIn.ViewModels.SettingsViewModel.addManualCommand">
+            <summary>The backing field for <see cref="P:EventCheckIn.ViewModels.SettingsViewModel.AddManualCommand"/>.</summary>
+        </member>
+        <member name="P:EventCheckIn.ViewModels.SettingsViewModel.AddManualCommand">
+            <summary>Gets an <see cref="T:CommunityToolkit.Mvvm.Input.IAsyncRelayCommand"/> instance wrapping <see cref="M:EventCheckIn.ViewModels.SettingsViewModel.AddManual"/>.</summary>
+        </member>
+        <member name="F:EventCheckIn.ViewModels.SettingsViewModel.pairCommand">
+            <summary>The backing field for <see cref="P:EventCheckIn.ViewModels.SettingsViewModel.PairCommand"/>.</summary>
+        </member>
+        <member name="P:EventCheckIn.ViewModels.SettingsViewModel.PairCommand">
+            <summary>Gets an <see cref="T:CommunityToolkit.Mvvm.Input.IAsyncRelayCommand"/> instance wrapping <see cref="M:EventCheckIn.ViewModels.SettingsViewModel.Pair"/>.</summary>
+        </member>
+        <member name="F:EventCheckIn.ViewModels.SettingsViewModel.unpairCommand">
+            <summary>The backing field for <see cref="P:EventCheckIn.ViewModels.SettingsViewModel.UnpairCommand"/>.</summary>
+        </member>
+        <member name="P:EventCheckIn.ViewModels.SettingsViewModel.UnpairCommand">
+            <summary>Gets an <see cref="T:CommunityToolkit.Mvvm.Input.IAsyncRelayCommand"/> instance wrapping <see cref="M:EventCheckIn.ViewModels.SettingsViewModel.Unpair"/>.</summary>
+        </member>
+        <member name="F:EventCheckIn.ViewModels.SettingsViewModel.syncNowCommand">
+            <summary>The backing field for <see cref="P:EventCheckIn.ViewModels.SettingsViewModel.SyncNowCommand"/>.</summary>
+        </member>
+        <member name="P:EventCheckIn.ViewModels.SettingsViewModel.SyncNowCommand">
+            <summary>Gets an <see cref="T:CommunityToolkit.Mvvm.Input.IAsyncRelayCommand"/> instance wrapping <see cref="M:EventCheckIn.ViewModels.SettingsViewModel.SyncNow"/>.</summary>
+        </member>
+        <member name="T:EventCheckIn.ViewModels.Flow">
+            <summary>Decides the next screen based on what the host's event asks for.</summary>
+        </member>
+        <member name="T:EventCheckIn.ViewModels.WelcomeViewModel">
+            <inheritdoc/>
+            <inheritdoc/>
+            <inheritdoc/>
+            <inheritdoc/>
+        </member>
+        <member name="M:EventCheckIn.ViewModels.WelcomeViewModel.Load">
+            <summary>Builds the form from the current event (fresh attendee) or restores it (coming back).</summary>
+        </member>
+        <member name="M:EventCheckIn.ViewModels.WelcomeViewModel.OnEventChanged">
+            <summary>Host published a new event: refresh the form if nobody is mid check-in.</summary>
+        </member>
+        <member name="P:EventCheckIn.ViewModels.WelcomeViewModel.EventName">
+            <inheritdoc cref="F:EventCheckIn.ViewModels.WelcomeViewModel.eventName"/>
+        </member>
+        <member name="P:EventCheckIn.ViewModels.WelcomeViewModel.WelcomeMessage">
+            <inheritdoc cref="F:EventCheckIn.ViewModels.WelcomeViewModel.welcomeMessage"/>
+        </member>
+        <member name="P:EventCheckIn.ViewModels.WelcomeViewModel.Logo">
+            <inheritdoc cref="F:EventCheckIn.ViewModels.WelcomeViewModel.logo"/>
+        </member>
+        <member name="P:EventCheckIn.ViewModels.WelcomeViewModel.FullName">
+            <inheritdoc cref="F:EventCheckIn.ViewModels.WelcomeViewModel.fullName"/>
+        </member>
+        <member name="P:EventCheckIn.ViewModels.WelcomeViewModel.NameError">
+            <inheritdoc cref="F:EventCheckIn.ViewModels.WelcomeViewModel.nameError"/>
+        </member>
+        <member name="M:EventCheckIn.ViewModels.WelcomeViewModel.OnFullNameChanged(System.String)">
+            <summary>Executes the logic for when <see cref="P:EventCheckIn.ViewModels.WelcomeViewModel.FullName"/> just changed.</summary>
+            <param name="value">The new property value that was set.</param>
+            <remarks>This method is invoked right after the value of <see cref="P:EventCheckIn.ViewModels.WelcomeViewModel.FullName"/> is changed.</remarks>
+        </member>
+        <member name="F:EventCheckIn.ViewModels.WelcomeViewModel.startCommand">
+            <summary>The backing field for <see cref="P:EventCheckIn.ViewModels.WelcomeViewModel.StartCommand"/>.</summary>
+        </member>
+        <member name="P:EventCheckIn.ViewModels.WelcomeViewModel.StartCommand">
+            <summary>Gets an <see cref="T:CommunityToolkit.Mvvm.Input.IAsyncRelayCommand"/> instance wrapping <see cref="M:EventCheckIn.ViewModels.WelcomeViewModel.Start"/>.</summary>
+        </member>
+        <member name="F:EventCheckIn.ViewModels.WelcomeViewModel.openSettingsCommand">
+            <summary>The backing field for <see cref="P:EventCheckIn.ViewModels.WelcomeViewModel.OpenSettingsCommand"/>.</summary>
+        </member>
+        <member name="P:EventCheckIn.ViewModels.WelcomeViewModel.OpenSettingsCommand">
+            <summary>Gets an <see cref="T:CommunityToolkit.Mvvm.Input.IAsyncRelayCommand"/> instance wrapping <see cref="M:EventCheckIn.ViewModels.WelcomeViewModel.OpenSettings"/>.</summary>
+        </member>
+        <member name="F:EventCheckIn.ViewModels.WelcomeViewModel.viewCheckInsCommand">
+            <summary>The backing field for <see cref="P:EventCheckIn.ViewModels.WelcomeViewModel.ViewCheckInsCommand"/>.</summary>
+        </member>
+        <member name="P:EventCheckIn.ViewModels.WelcomeViewModel.ViewCheckInsCommand">
+            <summary>Gets an <see cref="T:CommunityToolkit.Mvvm.Input.IAsyncRelayCommand"/> instance wrapping <see cref="M:EventCheckIn.ViewModels.WelcomeViewModel.ViewCheckIns"/>.</summary>
+        </member>
+        <member name="T:EventCheckIn.ViewModels.PhotoViewModel">
+            <inheritdoc/>
+            <inheritdoc/>
+            <inheritdoc/>
+        </member>
+        <member name="P:EventCheckIn.ViewModels.PhotoViewModel.Photo">
+            <inheritdoc cref="F:EventCheckIn.ViewModels.PhotoViewModel.photo"/>
+        </member>
+        <member name="F:EventCheckIn.ViewModels.PhotoViewModel.retakeCommand">
+            <summary>The backing field for <see cref="P:EventCheckIn.ViewModels.PhotoViewModel.RetakeCommand"/>.</summary>
+        </member>
+        <member name="P:EventCheckIn.ViewModels.PhotoViewModel.RetakeCommand">
+            <summary>Gets an <see cref="T:CommunityToolkit.Mvvm.Input.IRelayCommand"/> instance wrapping <see cref="M:EventCheckIn.ViewModels.PhotoViewModel.Retake"/>.</summary>
+        </member>
+        <member name="F:EventCheckIn.ViewModels.PhotoViewModel.nextCommand">
+            <summary>The backing field for <see cref="P:EventCheckIn.ViewModels.PhotoViewModel.NextCommand"/>.</summary>
+        </member>
+        <member name="P:EventCheckIn.ViewModels.PhotoViewModel.NextCommand">
+            <summary>Gets an <see cref="T:CommunityToolkit.Mvvm.Input.IAsyncRelayCommand"/> instance wrapping <see cref="M:EventCheckIn.ViewModels.PhotoViewModel.Next"/>.</summary>
+        </member>
+        <member name="T:EventCheckIn.ViewModels.DocumentsViewModel">
+            <inheritdoc/>
+            <inheritdoc/>
+            <inheritdoc/>
+            <inheritdoc/>
+        </member>
+        <member name="P:EventCheckIn.ViewModels.DocumentsViewModel.Current">
+            <inheritdoc cref="F:EventCheckIn.ViewModels.DocumentsViewModel.current"/>
+        </member>
+        <member name="P:EventCheckIn.ViewModels.DocumentsViewModel.CanContinue">
+            <inheritdoc cref="F:EventCheckIn.ViewModels.DocumentsViewModel.canContinue"/>
+        </member>
+        <member name="F:EventCheckIn.ViewModels.DocumentsViewModel.selectCommand">
+            <summary>The backing field for <see cref="P:EventCheckIn.ViewModels.DocumentsViewModel.SelectCommand"/>.</summary>
+        </member>
+        <member name="P:EventCheckIn.ViewModels.DocumentsViewModel.SelectCommand">
+            <summary>Gets an <see cref="T:CommunityToolkit.Mvvm.Input.IRelayCommand`1"/> instance wrapping <see cref="M:EventCheckIn.ViewModels.DocumentsViewModel.Select(EventCheckIn.ViewModels.DocumentStep)"/>.</summary>
+        </member>
+        <member name="F:EventCheckIn.ViewModels.DocumentsViewModel.skipCommand">
+            <summary>The backing field for <see cref="P:EventCheckIn.ViewModels.DocumentsViewModel.SkipCommand"/>.</summary>
+        </member>
+        <member name="P:EventCheckIn.ViewModels.DocumentsViewModel.SkipCommand">
+            <summary>Gets an <see cref="T:CommunityToolkit.Mvvm.Input.IRelayCommand"/> instance wrapping <see cref="M:EventCheckIn.ViewModels.DocumentsViewModel.Skip"/>.</summary>
+        </member>
+        <member name="F:EventCheckIn.ViewModels.DocumentsViewModel.nextCommand">
+            <summary>The backing field for <see cref="P:EventCheckIn.ViewModels.DocumentsViewModel.NextCommand"/>.</summary>
+        </member>
+        <member name="P:EventCheckIn.ViewModels.DocumentsViewModel.NextCommand">
+            <summary>Gets an <see cref="T:CommunityToolkit.Mvvm.Input.IAsyncRelayCommand"/> instance wrapping <see cref="M:EventCheckIn.ViewModels.DocumentsViewModel.Next"/>.</summary>
+        </member>
+        <member name="T:EventCheckIn.ViewModels.DocumentStep">
+            <inheritdoc/>
+        </member>
+        <member name="P:EventCheckIn.ViewModels.DocumentStep.Thumbnail">
+            <inheritdoc cref="F:EventCheckIn.ViewModels.DocumentStep.thumbnail"/>
+        </member>
+        <member name="P:EventCheckIn.ViewModels.DocumentStep.IsCurrent">
+            <inheritdoc cref="F:EventCheckIn.ViewModels.DocumentStep.isCurrent"/>
+        </member>
+        <member name="P:EventCheckIn.ViewModels.DocumentStep.Status">
+            <inheritdoc cref="F:EventCheckIn.ViewModels.DocumentStep.status"/>
+        </member>
+        <member name="T:EventCheckIn.ViewModels.SignatureViewModel">
+            <inheritdoc/>
+        </member>
+        <member name="M:EventCheckIn.ViewModels.SignatureViewModel.SubmitAsync(System.Byte[])">
+            <summary>Called by the page with the exported signature image.</summary>
+        </member>
+        <member name="P:EventCheckIn.ViewModels.SignatureViewModel.Agreed">
+            <inheritdoc cref="F:EventCheckIn.ViewModels.SignatureViewModel.agreed"/>
+        </member>
+        <member name="P:EventCheckIn.ViewModels.SignatureViewModel.IsBusy">
+            <inheritdoc cref="F:EventCheckIn.ViewModels.SignatureViewModel.isBusy"/>
+        </member>
+        <member name="T:EventCheckIn.ViewModels.CompleteViewModel">
+            <inheritdoc/>
+            <inheritdoc/>
+        </member>
+        <member name="P:EventCheckIn.ViewModels.CompleteViewModel.Message">
+            <inheritdoc cref="F:EventCheckIn.ViewModels.CompleteViewModel.message"/>
+        </member>
+        <member name="P:EventCheckIn.ViewModels.CompleteViewModel.Photo">
+            <inheritdoc cref="F:EventCheckIn.ViewModels.CompleteViewModel.photo"/>
+        </member>
+        <member name="P:EventCheckIn.ViewModels.CompleteViewModel.Logo">
+            <inheritdoc cref="F:EventCheckIn.ViewModels.CompleteViewModel.logo"/>
+        </member>
+        <member name="F:EventCheckIn.ViewModels.CompleteViewModel.nextAttendeeCommand">
+            <summary>The backing field for <see cref="P:EventCheckIn.ViewModels.CompleteViewModel.NextAttendeeCommand"/>.</summary>
+        </member>
+        <member name="P:EventCheckIn.ViewModels.CompleteViewModel.NextAttendeeCommand">
+            <summary>Gets an <see cref="T:CommunityToolkit.Mvvm.Input.IAsyncRelayCommand"/> instance wrapping <see cref="M:EventCheckIn.ViewModels.CompleteViewModel.NextAttendee"/>.</summary>
+        </member>
+        <member name="T:EventCheckIn.ViewModels.CheckInListViewModel">
+            <inheritdoc/>
+        </member>
+        <member name="P:EventCheckIn.ViewModels.CheckInListViewModel.Summary">
+            <inheritdoc cref="F:EventCheckIn.ViewModels.CheckInListViewModel.summary"/>
+        </member>
+        <member name="T:EventCheckIn.Views.CameraHelper">
+            <summary>Shared camera helpers for the photo and document pages.</summary>
+        </member>
+        <member name="M:EventCheckIn.Views.CameraHelper.WaitForHandlerAsync(CommunityToolkit.Maui.Views.CameraView)">
+            <summary>
+            OnAppearing can fire before the CameraView's native handler exists,
+            so wait for HandlerChanged (max 5 s) before calling camera APIs.
+            </summary>
+        </member>
+        <member name="T:EventCheckIn.Resource">
+            <summary>
+            Android Resource Designer class.
+            Exposes the Android Resource designer assembly into the project Namespace.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Maui.Controls.ColorAnimationExtensions_Button.TextColorTo(Microsoft.Maui.Controls.Button,Microsoft.Maui.Graphics.Color,System.UInt32,System.UInt32,Microsoft.Maui.Easing,System.Threading.CancellationToken)">
+            <summary>
+            Animates the TextColor of an <see cref = "T:Microsoft.Maui.ITextStyle"/> to the given color
+            </summary>
+            <param name = "element"></param>
+            <param name = "color">The target color to animate the <see cref = "P:Microsoft.Maui.ITextStyle.TextColor"/> to</param>
+            <param name = "rate">The time, in milliseconds, between the frames of the animation. Must be greater than 0.</param>
+            <param name = "length">The duration, in milliseconds, of the animation</param>
+            <param name = "easing">The easing function to be used in the animation</param>
+            <param name = "token"><see cref = "T:System.Threading.CancellationToken"/></param>
+            <returns>Value indicating if the animation completed successfully or not</returns>
+            <exception cref = "T:System.ArgumentOutOfRangeException">Thrown when <paramref name = "rate"/> is 0. It is thrown by the call itself, before the animation starts.</exception>
+        </member>
+        <member name="M:Microsoft.Maui.Controls.ColorAnimationExtensions_DatePicker.TextColorTo(Microsoft.Maui.Controls.DatePicker,Microsoft.Maui.Graphics.Color,System.UInt32,System.UInt32,Microsoft.Maui.Easing,System.Threading.CancellationToken)">
+            <summary>
+            Animates the TextColor of an <see cref = "T:Microsoft.Maui.ITextStyle"/> to the given color
+            </summary>
+            <param name = "element"></param>
+            <param name = "color">The target color to animate the <see cref = "P:Microsoft.Maui.ITextStyle.TextColor"/> to</param>
+            <param name = "rate">The time, in milliseconds, between the frames of the animation. Must be greater than 0.</param>
+            <param name = "length">The duration, in milliseconds, of the animation</param>
+            <param name = "easing">The easing function to be used in the animation</param>
+            <param name = "token"><see cref = "T:System.Threading.CancellationToken"/></param>
+            <returns>Value indicating if the animation completed successfully or not</returns>
+            <exception cref = "T:System.ArgumentOutOfRangeException">Thrown when <paramref name = "rate"/> is 0. It is thrown by the call itself, before the animation starts.</exception>
+        </member>
+        <member name="M:Microsoft.Maui.Controls.ColorAnimationExtensions_Editor.TextColorTo(Microsoft.Maui.Controls.Editor,Microsoft.Maui.Graphics.Color,System.UInt32,System.UInt32,Microsoft.Maui.Easing,System.Threading.CancellationToken)">
+            <summary>
+            Animates the TextColor of an <see cref = "T:Microsoft.Maui.ITextStyle"/> to the given color
+            </summary>
+            <param name = "element"></param>
+            <param name = "color">The target color to animate the <see cref = "P:Microsoft.Maui.ITextStyle.TextColor"/> to</param>
+            <param name = "rate">The time, in milliseconds, between the frames of the animation. Must be greater than 0.</param>
+            <param name = "length">The duration, in milliseconds, of the animation</param>
+            <param name = "easing">The easing function to be used in the animation</param>
+            <param name = "token"><see cref = "T:System.Threading.CancellationToken"/></param>
+            <returns>Value indicating if the animation completed successfully or not</returns>
+            <exception cref = "T:System.ArgumentOutOfRangeException">Thrown when <paramref name = "rate"/> is 0. It is thrown by the call itself, before the animation starts.</exception>
+        </member>
+        <member name="M:Microsoft.Maui.Controls.ColorAnimationExtensions_Entry.TextColorTo(Microsoft.Maui.Controls.Entry,Microsoft.Maui.Graphics.Color,System.UInt32,System.UInt32,Microsoft.Maui.Easing,System.Threading.CancellationToken)">
+            <summary>
+            Animates the TextColor of an <see cref = "T:Microsoft.Maui.ITextStyle"/> to the given color
+            </summary>
+            <param name = "element"></param>
+            <param name = "color">The target color to animate the <see cref = "P:Microsoft.Maui.ITextStyle.TextColor"/> to</param>
+            <param name = "rate">The time, in milliseconds, between the frames of the animation. Must be greater than 0.</param>
+            <param name = "length">The duration, in milliseconds, of the animation</param>
+            <param name = "easing">The easing function to be used in the animation</param>
+            <param name = "token"><see cref = "T:System.Threading.CancellationToken"/></param>
+            <returns>Value indicating if the animation completed successfully or not</returns>
+            <exception cref = "T:System.ArgumentOutOfRangeException">Thrown when <paramref name = "rate"/> is 0. It is thrown by the call itself, before the animation starts.</exception>
+        </member>
+        <member name="M:Microsoft.Maui.Controls.ColorAnimationExtensions_InputView.TextColorTo(Microsoft.Maui.Controls.InputView,Microsoft.Maui.Graphics.Color,System.UInt32,System.UInt32,Microsoft.Maui.Easing,System.Threading.CancellationToken)">
+            <summary>
+            Animates the TextColor of an <see cref = "T:Microsoft.Maui.ITextStyle"/> to the given color
+            </summary>
+            <param name = "element"></param>
+            <param name = "color">The target color to animate the <see cref = "P:Microsoft.Maui.ITextStyle.TextColor"/> to</param>
+            <param name = "rate">The time, in milliseconds, between the frames of the animation. Must be greater than 0.</param>
+            <param name = "length">The duration, in milliseconds, of the animation</param>
+            <param name = "easing">The easing function to be used in the animation</param>
+            <param name = "token"><see cref = "T:System.Threading.CancellationToken"/></param>
+            <returns>Value indicating if the animation completed successfully or not</returns>
+            <exception cref = "T:System.ArgumentOutOfRangeException">Thrown when <paramref name = "rate"/> is 0. It is thrown by the call itself, before the animation starts.</exception>
+        </member>
+        <member name="M:Microsoft.Maui.Controls.ColorAnimationExtensions_Label.TextColorTo(Microsoft.Maui.Controls.Label,Microsoft.Maui.Graphics.Color,System.UInt32,System.UInt32,Microsoft.Maui.Easing,System.Threading.CancellationToken)">
+            <summary>
+            Animates the TextColor of an <see cref = "T:Microsoft.Maui.ITextStyle"/> to the given color
+            </summary>
+            <param name = "element"></param>
+            <param name = "color">The target color to animate the <see cref = "P:Microsoft.Maui.ITextStyle.TextColor"/> to</param>
+            <param name = "rate">The time, in milliseconds, between the frames of the animation. Must be greater than 0.</param>
+            <param name = "length">The duration, in milliseconds, of the animation</param>
+            <param name = "easing">The easing function to be used in the animation</param>
+            <param name = "token"><see cref = "T:System.Threading.CancellationToken"/></param>
+            <returns>Value indicating if the animation completed successfully or not</returns>
+            <exception cref = "T:System.ArgumentOutOfRangeException">Thrown when <paramref name = "rate"/> is 0. It is thrown by the call itself, before the animation starts.</exception>
+        </member>
+        <member name="M:Microsoft.Maui.Controls.ColorAnimationExtensions_Picker.TextColorTo(Microsoft.Maui.Controls.Picker,Microsoft.Maui.Graphics.Color,System.UInt32,System.UInt32,Microsoft.Maui.Easing,System.Threading.CancellationToken)">
+            <summary>
+            Animates the TextColor of an <see cref = "T:Microsoft.Maui.ITextStyle"/> to the given color
+            </summary>
+            <param name = "element"></param>
+            <param name = "color">The target color to animate the <see cref = "P:Microsoft.Maui.ITextStyle.TextColor"/> to</param>
+            <param name = "rate">The time, in milliseconds, between the frames of the animation. Must be greater than 0.</param>
+            <param name = "length">The duration, in milliseconds, of the animation</param>
+            <param name = "easing">The easing function to be used in the animation</param>
+            <param name = "token"><see cref = "T:System.Threading.CancellationToken"/></param>
+            <returns>Value indicating if the animation completed successfully or not</returns>
+            <exception cref = "T:System.ArgumentOutOfRangeException">Thrown when <paramref name = "rate"/> is 0. It is thrown by the call itself, before the animation starts.</exception>
+        </member>
+        <member name="M:Microsoft.Maui.Controls.ColorAnimationExtensions_RadioButton.TextColorTo(Microsoft.Maui.Controls.RadioButton,Microsoft.Maui.Graphics.Color,System.UInt32,System.UInt32,Microsoft.Maui.Easing,System.Threading.CancellationToken)">
+            <summary>
+            Animates the TextColor of an <see cref = "T:Microsoft.Maui.ITextStyle"/> to the given color
+            </summary>
+            <param name = "element"></param>
+            <param name = "color">The target color to animate the <see cref = "P:Microsoft.Maui.ITextStyle.TextColor"/> to</param>
+            <param name = "rate">The time, in milliseconds, between the frames of the animation. Must be greater than 0.</param>
+            <param name = "length">The duration, in milliseconds, of the animation</param>
+            <param name = "easing">The easing function to be used in the animation</param>
+            <param name = "token"><see cref = "T:System.Threading.CancellationToken"/></param>
+            <returns>Value indicating if the animation completed successfully or not</returns>
+            <exception cref = "T:System.ArgumentOutOfRangeException">Thrown when <paramref name = "rate"/> is 0. It is thrown by the call itself, before the animation starts.</exception>
+        </member>
+        <member name="M:Microsoft.Maui.Controls.ColorAnimationExtensions_SearchBar.TextColorTo(Microsoft.Maui.Controls.SearchBar,Microsoft.Maui.Graphics.Color,System.UInt32,System.UInt32,Microsoft.Maui.Easing,System.Threading.CancellationToken)">
+            <summary>
+            Animates the TextColor of an <see cref = "T:Microsoft.Maui.ITextStyle"/> to the given color
+            </summary>
+            <param name = "element"></param>
+            <param name = "color">The target color to animate the <see cref = "P:Microsoft.Maui.ITextStyle.TextColor"/> to</param>
+            <param name = "rate">The time, in milliseconds, between the frames of the animation. Must be greater than 0.</param>
+            <param name = "length">The duration, in milliseconds, of the animation</param>
+            <param name = "easing">The easing function to be used in the animation</param>
+            <param name = "token"><see cref = "T:System.Threading.CancellationToken"/></param>
+            <returns>Value indicating if the animation completed successfully or not</returns>
+            <exception cref = "T:System.ArgumentOutOfRangeException">Thrown when <paramref name = "rate"/> is 0. It is thrown by the call itself, before the animation starts.</exception>
+        </member>
+        <member name="M:Microsoft.Maui.Controls.ColorAnimationExtensions_TimePicker.TextColorTo(Microsoft.Maui.Controls.TimePicker,Microsoft.Maui.Graphics.Color,System.UInt32,System.UInt32,Microsoft.Maui.Easing,System.Threading.CancellationToken)">
+            <summary>
+            Animates the TextColor of an <see cref = "T:Microsoft.Maui.ITextStyle"/> to the given color
+            </summary>
+            <param name = "element"></param>
+            <param name = "color">The target color to animate the <see cref = "P:Microsoft.Maui.ITextStyle.TextColor"/> to</param>
+            <param name = "rate">The time, in milliseconds, between the frames of the animation. Must be greater than 0.</param>
+            <param name = "length">The duration, in milliseconds, of the animation</param>
+            <param name = "easing">The easing function to be used in the animation</param>
+            <param name = "token"><see cref = "T:System.Threading.CancellationToken"/></param>
+            <returns>Value indicating if the animation completed successfully or not</returns>
+            <exception cref = "T:System.ArgumentOutOfRangeException">Thrown when <paramref name = "rate"/> is 0. It is thrown by the call itself, before the animation starts.</exception>
+        </member>
+        <member name="T:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangingArgs">
+            <summary>
+            A helper type providing cached, reusable <see cref="T:System.ComponentModel.PropertyChangingEventArgs"/> instances
+            for all properties generated with <see cref="T:CommunityToolkit.Mvvm.ComponentModel.ObservablePropertyAttribute"/>.
+            </summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangingArgs.PendingCount">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangingEventArgs"/> instance for all "PendingCount" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangingArgs.IsOnline">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangingEventArgs"/> instance for all "IsOnline" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangingArgs.StatusText">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangingEventArgs"/> instance for all "StatusText" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangingArgs.Text">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangingEventArgs"/> instance for all "Text" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangingArgs.SelectedOption">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangingEventArgs"/> instance for all "SelectedOption" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangingArgs.Error">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangingEventArgs"/> instance for all "Error" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangingArgs.HasError">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangingEventArgs"/> instance for all "HasError" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangingArgs.IsSelected">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangingEventArgs"/> instance for all "IsSelected" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangingArgs.KioskName">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangingEventArgs"/> instance for all "KioskName" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangingArgs.ManualAddress">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangingEventArgs"/> instance for all "ManualAddress" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangingArgs.Pin">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangingEventArgs"/> instance for all "Pin" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangingArgs.SelectedServer">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangingEventArgs"/> instance for all "SelectedServer" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangingArgs.CanPair">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangingEventArgs"/> instance for all "CanPair" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangingArgs.IsBusy">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangingEventArgs"/> instance for all "IsBusy" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangingArgs.Message">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangingEventArgs"/> instance for all "Message" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangingArgs.PairedWith">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangingEventArgs"/> instance for all "PairedWith" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangingArgs.IsPaired">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangingEventArgs"/> instance for all "IsPaired" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangingArgs.EventName">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangingEventArgs"/> instance for all "EventName" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangingArgs.WelcomeMessage">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangingEventArgs"/> instance for all "WelcomeMessage" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangingArgs.HasWelcome">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangingEventArgs"/> instance for all "HasWelcome" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangingArgs.Logo">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangingEventArgs"/> instance for all "Logo" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangingArgs.HasLogo">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangingEventArgs"/> instance for all "HasLogo" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangingArgs.FullName">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangingEventArgs"/> instance for all "FullName" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangingArgs.NameError">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangingEventArgs"/> instance for all "NameError" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangingArgs.HasNameError">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangingEventArgs"/> instance for all "HasNameError" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangingArgs.Photo">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangingEventArgs"/> instance for all "Photo" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangingArgs.HasPhoto">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangingEventArgs"/> instance for all "HasPhoto" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangingArgs.IsCapturing">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangingEventArgs"/> instance for all "IsCapturing" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangingArgs.Current">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangingEventArgs"/> instance for all "Current" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangingArgs.Prompt">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangingEventArgs"/> instance for all "Prompt" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangingArgs.Instructions">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangingEventArgs"/> instance for all "Instructions" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangingArgs.CanSkip">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangingEventArgs"/> instance for all "CanSkip" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangingArgs.ScanButtonText">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangingEventArgs"/> instance for all "ScanButtonText" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangingArgs.CanContinue">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangingEventArgs"/> instance for all "CanContinue" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangingArgs.Thumbnail">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangingEventArgs"/> instance for all "Thumbnail" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangingArgs.IsCurrent">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangingEventArgs"/> instance for all "IsCurrent" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangingArgs.BorderColor">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangingEventArgs"/> instance for all "BorderColor" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangingArgs.Status">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangingEventArgs"/> instance for all "Status" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangingArgs.Agreed">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangingEventArgs"/> instance for all "Agreed" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangingArgs.Summary">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangingEventArgs"/> instance for all "Summary" generated properties.</summary>
+        </member>
+        <member name="T:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangedArgs">
+            <summary>
+            A helper type providing cached, reusable <see cref="T:System.ComponentModel.PropertyChangedEventArgs"/> instances
+            for all properties generated with <see cref="T:CommunityToolkit.Mvvm.ComponentModel.ObservablePropertyAttribute"/>.
+            </summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangedArgs.PendingCount">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangedEventArgs"/> instance for all "PendingCount" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangedArgs.IsOnline">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangedEventArgs"/> instance for all "IsOnline" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangedArgs.StatusText">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangedEventArgs"/> instance for all "StatusText" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangedArgs.Text">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangedEventArgs"/> instance for all "Text" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangedArgs.SelectedOption">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangedEventArgs"/> instance for all "SelectedOption" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangedArgs.Error">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangedEventArgs"/> instance for all "Error" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangedArgs.HasError">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangedEventArgs"/> instance for all "HasError" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangedArgs.IsSelected">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangedEventArgs"/> instance for all "IsSelected" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangedArgs.KioskName">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangedEventArgs"/> instance for all "KioskName" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangedArgs.ManualAddress">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangedEventArgs"/> instance for all "ManualAddress" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangedArgs.Pin">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangedEventArgs"/> instance for all "Pin" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangedArgs.SelectedServer">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangedEventArgs"/> instance for all "SelectedServer" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangedArgs.CanPair">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangedEventArgs"/> instance for all "CanPair" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangedArgs.IsBusy">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangedEventArgs"/> instance for all "IsBusy" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangedArgs.Message">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangedEventArgs"/> instance for all "Message" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangedArgs.PairedWith">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangedEventArgs"/> instance for all "PairedWith" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangedArgs.IsPaired">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangedEventArgs"/> instance for all "IsPaired" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangedArgs.EventName">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangedEventArgs"/> instance for all "EventName" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangedArgs.WelcomeMessage">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangedEventArgs"/> instance for all "WelcomeMessage" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangedArgs.HasWelcome">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangedEventArgs"/> instance for all "HasWelcome" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangedArgs.Logo">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangedEventArgs"/> instance for all "Logo" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangedArgs.HasLogo">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangedEventArgs"/> instance for all "HasLogo" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangedArgs.FullName">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangedEventArgs"/> instance for all "FullName" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangedArgs.NameError">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangedEventArgs"/> instance for all "NameError" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangedArgs.HasNameError">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangedEventArgs"/> instance for all "HasNameError" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangedArgs.Photo">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangedEventArgs"/> instance for all "Photo" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangedArgs.HasPhoto">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangedEventArgs"/> instance for all "HasPhoto" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangedArgs.IsCapturing">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangedEventArgs"/> instance for all "IsCapturing" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangedArgs.Current">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangedEventArgs"/> instance for all "Current" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangedArgs.Prompt">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangedEventArgs"/> instance for all "Prompt" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangedArgs.Instructions">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangedEventArgs"/> instance for all "Instructions" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangedArgs.CanSkip">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangedEventArgs"/> instance for all "CanSkip" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangedArgs.ScanButtonText">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangedEventArgs"/> instance for all "ScanButtonText" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangedArgs.CanContinue">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangedEventArgs"/> instance for all "CanContinue" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangedArgs.Thumbnail">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangedEventArgs"/> instance for all "Thumbnail" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangedArgs.IsCurrent">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangedEventArgs"/> instance for all "IsCurrent" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangedArgs.BorderColor">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangedEventArgs"/> instance for all "BorderColor" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangedArgs.Status">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangedEventArgs"/> instance for all "Status" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangedArgs.Agreed">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangedEventArgs"/> instance for all "Agreed" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangedArgs.Summary">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangedEventArgs"/> instance for all "Summary" generated properties.</summary>
+        </member>
+    </members>
+</doc>

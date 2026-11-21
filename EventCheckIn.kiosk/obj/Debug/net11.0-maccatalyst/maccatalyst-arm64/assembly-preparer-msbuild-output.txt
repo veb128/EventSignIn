@@ -1,0 +1,2 @@
+DynamicRegistrationSupported=false
+TrimExportAttributes=true

@@ -1,0 +1,7 @@
+/tmp/eci-pub/win-x64/appsettings.Development.json
+/tmp/eci-pub/win-x64/appsettings.json
+/tmp/eci-pub/win-x64/global.json
+/tmp/eci-pub/win-x64/EventCheckIn.Server.pdb
+/tmp/eci-pub/win-x64/aspnetcorev2_inprocess.dll
+/tmp/eci-pub/win-x64/e_sqlite3.dll
+/tmp/eci-pub/win-x64/EventCheckIn.Server.exe

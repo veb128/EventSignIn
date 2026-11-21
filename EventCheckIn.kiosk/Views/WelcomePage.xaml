@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:EventCheckIn.ViewModels"
+             x:Class="EventCheckIn.Views.WelcomePage"
+             x:DataType="vm:WelcomeViewModel"
+             Title="{Binding EventName}">
+
+    <ContentPage.Resources>
+        <Style x:Key="FieldLabel" TargetType="Label">
+            <Setter Property="FontAttributes" Value="Bold" />
+        </Style>
+        <Style x:Key="ErrorLabel" TargetType="Label">
+            <Setter Property="TextColor" Value="#C62828" />
+            <Setter Property="FontSize" Value="13" />
+        </Style>
+
+        <vm:FieldTemplateSelector x:Key="FieldSelector">
+            <!-- Free text -->
+            <vm:FieldTemplateSelector.TextTemplate>
+                <DataTemplate x:DataType="vm:FieldInput">
+                    <VerticalStackLayout Spacing="4">
+                        <Label Text="{Binding Label}" Style="{StaticResource FieldLabel}" />
+                        <Entry Text="{Binding Text}" Placeholder="{Binding Placeholder}"
+                               Keyboard="{Binding Keyboard}" MaxLength="{Binding MaxLength}" />
+                        <Label Text="{Binding Error}" IsVisible="{Binding HasError}" Style="{StaticResource ErrorLabel}" />
+                    </VerticalStackLayout>
+                </DataTemplate>
+            </vm:FieldTemplateSelector.TextTemplate>
+
+            <!-- Single choice -->
+            <vm:FieldTemplateSelector.RadioTemplate>
+                <DataTemplate x:DataType="vm:FieldInput">
+                    <VerticalStackLayout Spacing="2" RadioButtonGroup.GroupName="{Binding Def.Id}">
+                        <Label Text="{Binding Label}" Style="{StaticResource FieldLabel}" />
+                        <FlexLayout Wrap="Wrap" BindableLayout.ItemsSource="{Binding Options}">
+                            <BindableLayout.ItemTemplate>
+                                <DataTemplate x:DataType="vm:OptionItem">
+                                    <RadioButton Content="{Binding Value}" IsChecked="{Binding IsSelected}" Margin="0,0,16,0" />
+                                </DataTemplate>
+                            </BindableLayout.ItemTemplate>
+                        </FlexLayout>
+                        <Label Text="{Binding Error}" IsVisible="{Binding HasError}" Style="{StaticResource ErrorLabel}" />
+                    </VerticalStackLayout>
+                </DataTemplate>
+            </vm:FieldTemplateSelector.RadioTemplate>
+
+            <!-- Multiple choice -->
+            <vm:FieldTemplateSelector.CheckboxTemplate>
+                <DataTemplate x:DataType="vm:FieldInput">
+                    <VerticalStackLayout Spacing="2">
+                        <Label Text="{Binding Label}" Style="{StaticResource FieldLabel}" />
+                        <FlexLayout Wrap="Wrap" BindableLayout.ItemsSource="{Binding Options}">
+                            <BindableLayout.ItemTemplate>
+                                <DataTemplate x:DataType="vm:OptionItem">
+                                    <HorizontalStackLayout Margin="0,0,16,0">
+                                        <CheckBox IsChecked="{Binding IsSelected}" />
+                                        <Label Text="{Binding Value}" VerticalOptions="Center">
+                                            <Label.GestureRecognizers>
+                                                <TapGestureRecognizer Tapped="OnOptionLabelTapped" />
+                                            </Label.GestureRecognizers>
+                                        </Label>
+                                    </HorizontalStackLayout>
+                                </DataTemplate>
+                            </BindableLayout.ItemTemplate>
+                        </FlexLayout>
+                        <Label Text="{Binding Error}" IsVisible="{Binding HasError}" Style="{StaticResource ErrorLabel}" />
+                    </VerticalStackLayout>
+                </DataTemplate>
+            </vm:FieldTemplateSelector.CheckboxTemplate>
+
+            <!-- Dropdown -->
+            <vm:FieldTemplateSelector.DropdownTemplate>
+                <DataTemplate x:DataType="vm:FieldInput">
+                    <VerticalStackLayout Spacing="4">
+                        <Label Text="{Binding Label}" Style="{StaticResource FieldLabel}" />
+                        <Picker ItemsSource="{Binding OptionValues}" SelectedItem="{Binding SelectedOption}" Title="Select…" />
+                        <Label Text="{Binding Error}" IsVisible="{Binding HasError}" Style="{StaticResource ErrorLabel}" />
+                    </VerticalStackLayout>
+                </DataTemplate>
+            </vm:FieldTemplateSelector.DropdownTemplate>
+        </vm:FieldTemplateSelector>
+    </ContentPage.Resources>
+
+    <ScrollView>
+        <VerticalStackLayout Padding="30" Spacing="16" MaximumWidthRequest="640">
+            <Image Source="{Binding Logo}" IsVisible="{Binding HasLogo}" HeightRequest="110" Aspect="AspectFit" />
+            <Label Text="{Binding EventName}" FontSize="32" FontAttributes="Bold" HorizontalOptions="Center"
+                   HorizontalTextAlignment="Center" />
+            <Label Text="{Binding WelcomeMessage}" IsVisible="{Binding HasWelcome}" FontSize="17"
+                   HorizontalOptions="Center" HorizontalTextAlignment="Center" />
+
+            <VerticalStackLayout Spacing="4">
+                <Label Text="Full name *" Style="{StaticResource FieldLabel}" />
+                <Entry Text="{Binding FullName}" Placeholder="Jane Doe" />
+                <Label Text="{Binding NameError}" IsVisible="{Binding HasNameError}" Style="{StaticResource ErrorLabel}" />
+            </VerticalStackLayout>
+
+            <VerticalStackLayout Spacing="16" BindableLayout.ItemsSource="{Binding Fields}"
+                                 BindableLayout.ItemTemplateSelector="{StaticResource FieldSelector}" />
+
+            <Button Text="Start Check-In →" Command="{Binding StartCommand}" FontSize="20" Margin="0,16,0,0" />
+            <Button Text="View check-ins" Command="{Binding ViewCheckInsCommand}"
+                    BackgroundColor="Transparent" TextColor="{StaticResource Primary}" />
+
+            <Border Padding="12" StrokeShape="RoundRectangle 10" Margin="0,10,0,0">
+                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
+                    <Label Text="{Binding Sync.StatusText}" VerticalOptions="Center" FontSize="13" TextColor="Gray" />
+                    <Button Grid.Column="1" Text="⚙ Kiosk settings" Command="{Binding OpenSettingsCommand}" FontSize="13" />
+                </Grid>
+            </Border>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

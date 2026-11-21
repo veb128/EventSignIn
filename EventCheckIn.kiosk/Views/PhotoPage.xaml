@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             xmlns:vm="clr-namespace:EventCheckIn.ViewModels"
+             x:Class="EventCheckIn.Views.PhotoPage"
+             x:DataType="vm:PhotoViewModel"
+             Title="Your Photo">
+    <Grid RowDefinitions="Auto,*,Auto" Padding="20" RowSpacing="12">
+        <Label Text="Step 2 of 4 — Look at the camera and tap Capture" HorizontalOptions="Center" TextColor="Gray" />
+
+        <Border Grid.Row="1" StrokeShape="RoundRectangle 16" BackgroundColor="Black">
+            <Grid>
+                <toolkit:CameraView x:Name="Camera" IsVisible="{Binding IsCapturing}"
+                                    MediaCaptured="OnMediaCaptured" />
+                <Image Source="{Binding Photo}" IsVisible="{Binding HasPhoto}" Aspect="AspectFit" />
+            </Grid>
+        </Border>
+
+        <HorizontalStackLayout Grid.Row="2" Spacing="12" HorizontalOptions="Center">
+            <Button Text="📷 Capture" Clicked="OnCaptureClicked" IsVisible="{Binding IsCapturing}" WidthRequest="180" />
+            <Button Text="Retake" Command="{Binding RetakeCommand}" IsVisible="{Binding HasPhoto}"
+                    Clicked="OnRetakeClicked" BackgroundColor="Gray" WidthRequest="140" />
+            <Button Text="Next →" Command="{Binding NextCommand}" IsVisible="{Binding HasPhoto}" WidthRequest="140" />
+        </HorizontalStackLayout>
+    </Grid>
+</ContentPage>

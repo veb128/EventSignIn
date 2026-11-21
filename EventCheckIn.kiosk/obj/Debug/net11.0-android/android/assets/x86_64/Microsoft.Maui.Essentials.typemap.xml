@@ -1,0 +1,52 @@
+<api type="debug" assembly-name="Microsoft.Maui.Essentials" assembly-full-name="Microsoft.Maui.Essentials, Version=11.0.0.0, Culture=neutral, PublicKeyToken=null" mvid="89c9670bc0af458b8f193bc9ca9d4b2a">
+  <java-to-managed>
+    <entry java-name="crc6468b6408a11370c2f/PasskeysImplementation_CredentialManagerCallback" managed-name="Microsoft.Maui.Authentication.PasskeysImplementation+CredentialManagerCallback, Microsoft.Maui.Essentials" managed-type-token-id="33554751" />
+    <entry java-name="crc6468b6408a11370c2f/WebAuthenticatorCallbackActivity" managed-name="Microsoft.Maui.Authentication.WebAuthenticatorCallbackActivity, Microsoft.Maui.Essentials" managed-type-token-id="33554460" />
+    <entry java-name="crc6468b6408a11370c2f/WebAuthenticatorIntermediateActivity" managed-name="Microsoft.Maui.Authentication.WebAuthenticatorIntermediateActivity, Microsoft.Maui.Essentials" managed-type-token-id="33554461" />
+    <entry java-name="crc6493855b22b6fa0721/ScreenshotImplementation_PixelCopyFinishedListener" managed-name="Microsoft.Maui.Media.ScreenshotImplementation+PixelCopyFinishedListener, Microsoft.Maui.Essentials" managed-type-token-id="33554814" />
+    <entry java-name="crc6493855b22b6fa0721/TextToSpeechInternalImplementation" managed-name="Microsoft.Maui.Media.TextToSpeechInternalImplementation, Microsoft.Maui.Essentials" managed-type-token-id="33554496" />
+    <entry java-name="microsoft/maui/essentials/fileProvider" managed-name="Microsoft.Maui.Storage.FileProvider, Microsoft.Maui.Essentials" managed-type-token-id="33554521" />
+    <entry java-name="crc64e53d2f592022988e/ConnectivityImplementation_EssentialsNetworkCallback" managed-name="Microsoft.Maui.Networking.ConnectivityImplementation+EssentialsNetworkCallback, Microsoft.Maui.Essentials" managed-type-token-id="33554842" />
+    <entry java-name="crc64e53d2f592022988e/ConnectivityBroadcastReceiver" managed-name="Microsoft.Maui.Networking.ConnectivityBroadcastReceiver, Microsoft.Maui.Essentials" managed-type-token-id="33554529" />
+    <entry java-name="crc64ba438d8f48cf7e75/ActivityResultCallback_1" managed-name="Microsoft.Maui.ApplicationModel.ActivityResultCallback`1, Microsoft.Maui.Essentials" skip-in-java-to-managed="True" managed-type-token-id="33554580" />
+    <entry java-name="crc64ba438d8f48cf7e75/ActivityLifecycleContextListener" managed-name="Microsoft.Maui.ApplicationModel.ActivityLifecycleContextListener, Microsoft.Maui.Essentials" managed-type-token-id="33554587" />
+    <entry java-name="crc64ba438d8f48cf7e75/IntermediateActivity" managed-name="Microsoft.Maui.ApplicationModel.IntermediateActivity, Microsoft.Maui.Essentials" managed-type-token-id="33554590" />
+    <entry java-name="crc640a1f4d108c17e3f1/ClipboardChangeListener" managed-name="Microsoft.Maui.ApplicationModel.DataTransfer.ClipboardChangeListener, Microsoft.Maui.Essentials" managed-type-token-id="33554627" />
+    <entry java-name="crc640a8d9a12ddbf2cf2/DeviceDisplayImplementation_Listener" managed-name="Microsoft.Maui.Devices.DeviceDisplayImplementation+Listener, Microsoft.Maui.Essentials" managed-type-token-id="33554928" />
+    <entry java-name="crc640a8d9a12ddbf2cf2/BatteryBroadcastReceiver" managed-name="Microsoft.Maui.Devices.BatteryBroadcastReceiver, Microsoft.Maui.Essentials" managed-type-token-id="33554658" />
+    <entry java-name="crc640a8d9a12ddbf2cf2/EnergySaverBroadcastReceiver" managed-name="Microsoft.Maui.Devices.EnergySaverBroadcastReceiver, Microsoft.Maui.Essentials" managed-type-token-id="33554659" />
+    <entry java-name="crc64f62664462a8937a9/AccelerometerListener" managed-name="Microsoft.Maui.Devices.Sensors.AccelerometerListener, Microsoft.Maui.Essentials" managed-type-token-id="33554720" />
+    <entry java-name="crc64f62664462a8937a9/BarometerListener" managed-name="Microsoft.Maui.Devices.Sensors.BarometerListener, Microsoft.Maui.Essentials" managed-type-token-id="33554721" />
+    <entry java-name="crc64f62664462a8937a9/SensorListener" managed-name="Microsoft.Maui.Devices.Sensors.SensorListener, Microsoft.Maui.Essentials" managed-type-token-id="33554722" />
+    <entry java-name="crc64f62664462a8937a9/SingleLocationListener" managed-name="Microsoft.Maui.Devices.Sensors.SingleLocationListener, Microsoft.Maui.Essentials" managed-type-token-id="33554724" />
+    <entry java-name="crc64f62664462a8937a9/ContinuousLocationListener" managed-name="Microsoft.Maui.Devices.Sensors.ContinuousLocationListener, Microsoft.Maui.Essentials" managed-type-token-id="33554725" />
+    <entry java-name="crc64f62664462a8937a9/GyroscopeListener" managed-name="Microsoft.Maui.Devices.Sensors.GyroscopeListener, Microsoft.Maui.Essentials" managed-type-token-id="33554726" />
+    <entry java-name="crc64f62664462a8937a9/MagnetometerListener" managed-name="Microsoft.Maui.Devices.Sensors.MagnetometerListener, Microsoft.Maui.Essentials" managed-type-token-id="33554727" />
+    <entry java-name="crc64f62664462a8937a9/OrientationSensorListener" managed-name="Microsoft.Maui.Devices.Sensors.OrientationSensorListener, Microsoft.Maui.Essentials" managed-type-token-id="33554728" />
+  </java-to-managed>
+  <managed-to-java>
+    <entry java-name="crc6468b6408a11370c2f/PasskeysImplementation_CredentialManagerCallback" managed-name="Microsoft.Maui.Authentication.PasskeysImplementation+CredentialManagerCallback, Microsoft.Maui.Essentials" managed-type-token-id="33554751" />
+    <entry java-name="crc6468b6408a11370c2f/WebAuthenticatorCallbackActivity" managed-name="Microsoft.Maui.Authentication.WebAuthenticatorCallbackActivity, Microsoft.Maui.Essentials" managed-type-token-id="33554460" />
+    <entry java-name="crc6468b6408a11370c2f/WebAuthenticatorIntermediateActivity" managed-name="Microsoft.Maui.Authentication.WebAuthenticatorIntermediateActivity, Microsoft.Maui.Essentials" managed-type-token-id="33554461" />
+    <entry java-name="crc6493855b22b6fa0721/ScreenshotImplementation_PixelCopyFinishedListener" managed-name="Microsoft.Maui.Media.ScreenshotImplementation+PixelCopyFinishedListener, Microsoft.Maui.Essentials" managed-type-token-id="33554814" />
+    <entry java-name="crc6493855b22b6fa0721/TextToSpeechInternalImplementation" managed-name="Microsoft.Maui.Media.TextToSpeechInternalImplementation, Microsoft.Maui.Essentials" managed-type-token-id="33554496" />
+    <entry java-name="microsoft/maui/essentials/fileProvider" managed-name="Microsoft.Maui.Storage.FileProvider, Microsoft.Maui.Essentials" managed-type-token-id="33554521" />
+    <entry java-name="crc64e53d2f592022988e/ConnectivityImplementation_EssentialsNetworkCallback" managed-name="Microsoft.Maui.Networking.ConnectivityImplementation+EssentialsNetworkCallback, Microsoft.Maui.Essentials" managed-type-token-id="33554842" />
+    <entry java-name="crc64e53d2f592022988e/ConnectivityBroadcastReceiver" managed-name="Microsoft.Maui.Networking.ConnectivityBroadcastReceiver, Microsoft.Maui.Essentials" managed-type-token-id="33554529" />
+    <entry java-name="crc64ba438d8f48cf7e75/ActivityResultCallback_1" managed-name="Microsoft.Maui.ApplicationModel.ActivityResultCallback`1, Microsoft.Maui.Essentials" skip-in-java-to-managed="True" managed-type-token-id="33554580" />
+    <entry java-name="crc64ba438d8f48cf7e75/ActivityLifecycleContextListener" managed-name="Microsoft.Maui.ApplicationModel.ActivityLifecycleContextListener, Microsoft.Maui.Essentials" managed-type-token-id="33554587" />
+    <entry java-name="crc64ba438d8f48cf7e75/IntermediateActivity" managed-name="Microsoft.Maui.ApplicationModel.IntermediateActivity, Microsoft.Maui.Essentials" managed-type-token-id="33554590" />
+    <entry java-name="crc640a1f4d108c17e3f1/ClipboardChangeListener" managed-name="Microsoft.Maui.ApplicationModel.DataTransfer.ClipboardChangeListener, Microsoft.Maui.Essentials" managed-type-token-id="33554627" />
+    <entry java-name="crc640a8d9a12ddbf2cf2/DeviceDisplayImplementation_Listener" managed-name="Microsoft.Maui.Devices.DeviceDisplayImplementation+Listener, Microsoft.Maui.Essentials" managed-type-token-id="33554928" />
+    <entry java-name="crc640a8d9a12ddbf2cf2/BatteryBroadcastReceiver" managed-name="Microsoft.Maui.Devices.BatteryBroadcastReceiver, Microsoft.Maui.Essentials" managed-type-token-id="33554658" />
+    <entry java-name="crc640a8d9a12ddbf2cf2/EnergySaverBroadcastReceiver" managed-name="Microsoft.Maui.Devices.EnergySaverBroadcastReceiver, Microsoft.Maui.Essentials" managed-type-token-id="33554659" />
+    <entry java-name="crc64f62664462a8937a9/AccelerometerListener" managed-name="Microsoft.Maui.Devices.Sensors.AccelerometerListener, Microsoft.Maui.Essentials" managed-type-token-id="33554720" />
+    <entry java-name="crc64f62664462a8937a9/BarometerListener" managed-name="Microsoft.Maui.Devices.Sensors.BarometerListener, Microsoft.Maui.Essentials" managed-type-token-id="33554721" />
+    <entry java-name="crc64f62664462a8937a9/SensorListener" managed-name="Microsoft.Maui.Devices.Sensors.SensorListener, Microsoft.Maui.Essentials" managed-type-token-id="33554722" />
+    <entry java-name="crc64f62664462a8937a9/SingleLocationListener" managed-name="Microsoft.Maui.Devices.Sensors.SingleLocationListener, Microsoft.Maui.Essentials" managed-type-token-id="33554724" />
+    <entry java-name="crc64f62664462a8937a9/ContinuousLocationListener" managed-name="Microsoft.Maui.Devices.Sensors.ContinuousLocationListener, Microsoft.Maui.Essentials" managed-type-token-id="33554725" />
+    <entry java-name="crc64f62664462a8937a9/GyroscopeListener" managed-name="Microsoft.Maui.Devices.Sensors.GyroscopeListener, Microsoft.Maui.Essentials" managed-type-token-id="33554726" />
+    <entry java-name="crc64f62664462a8937a9/MagnetometerListener" managed-name="Microsoft.Maui.Devices.Sensors.MagnetometerListener, Microsoft.Maui.Essentials" managed-type-token-id="33554727" />
+    <entry java-name="crc64f62664462a8937a9/OrientationSensorListener" managed-name="Microsoft.Maui.Devices.Sensors.OrientationSensorListener, Microsoft.Maui.Essentials" managed-type-token-id="33554728" />
+  </managed-to-java>
+</api>

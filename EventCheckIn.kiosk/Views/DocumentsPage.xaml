@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             xmlns:vm="clr-namespace:EventCheckIn.ViewModels"
+             x:Class="EventCheckIn.Views.DocumentsPage"
+             x:DataType="vm:DocumentsViewModel"
+             x:Name="Page"
+             Title="Scan Documents">
+    <Grid RowDefinitions="Auto,Auto,*,Auto,Auto" Padding="20" RowSpacing="10">
+        <Label Text="{Binding Prompt}" FontSize="24" FontAttributes="Bold" HorizontalOptions="Center" />
+        <Label Grid.Row="1" Text="{Binding Instructions}" HorizontalOptions="Center"
+               HorizontalTextAlignment="Center" TextColor="Gray" />
+
+        <Border Grid.Row="2" StrokeShape="RoundRectangle 16" BackgroundColor="Black">
+            <Grid>
+                <toolkit:CameraView x:Name="Camera" MediaCaptured="OnMediaCaptured" />
+                <!-- document framing guide -->
+                <Border Stroke="White" StrokeThickness="2" StrokeDashArray="6,4" Margin="40"
+                        StrokeShape="RoundRectangle 8" InputTransparent="True" />
+            </Grid>
+        </Border>
+
+        <!-- One tile per requested document; tap a tile to (re)scan it -->
+        <CollectionView Grid.Row="3" ItemsSource="{Binding Steps}" HeightRequest="140" ItemsLayout="HorizontalList">
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="vm:DocumentStep">
+                    <Border Margin="4" Padding="6" WidthRequest="130" StrokeThickness="3" Stroke="{Binding BorderColor}"
+                            StrokeShape="RoundRectangle 8">
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding Source={x:Reference Page}, Path=BindingContext.SelectCommand, x:DataType=ContentPage}"
+                                                  CommandParameter="{Binding .}" />
+                        </Border.GestureRecognizers>
+                        <VerticalStackLayout Spacing="2">
+                            <Grid HeightRequest="70" BackgroundColor="#EEE">
+                                <Image Source="{Binding Thumbnail}" Aspect="AspectFill" />
+                            </Grid>
+                            <Label Text="{Binding Def.Name}" FontSize="13" FontAttributes="Bold" LineBreakMode="TailTruncation" />
+                            <Label Text="{Binding Status}" FontSize="12" TextColor="Gray" />
+                        </VerticalStackLayout>
+                    </Border>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+        <HorizontalStackLayout Grid.Row="4" Spacing="12" HorizontalOptions="Center">
+            <Button x:Name="ScanButton" Text="{Binding ScanButtonText}" Clicked="OnScanClicked" WidthRequest="180" />
+            <Button Text="Skip" Command="{Binding SkipCommand}" IsVisible="{Binding CanSkip}" BackgroundColor="Gray" WidthRequest="110" />
+            <Button Text="Next →" Command="{Binding NextCommand}" WidthRequest="140" />
+        </HorizontalStackLayout>
+    </Grid>
+</ContentPage>

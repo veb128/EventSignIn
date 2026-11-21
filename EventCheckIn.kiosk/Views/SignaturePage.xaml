@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             xmlns:vm="clr-namespace:EventCheckIn.ViewModels"
+             x:Class="EventCheckIn.Views.SignaturePage"
+             x:DataType="vm:SignatureViewModel"
+             Title="Sign">
+    <Grid RowDefinitions="Auto,Auto,*,Auto,Auto" Padding="20" RowSpacing="12">
+        <Label Text="Step 4 of 4 — Sign below to complete check-in" HorizontalOptions="Center" TextColor="Gray" />
+        <Label Grid.Row="1" HorizontalOptions="Center" FontSize="18">
+            <Label.FormattedText>
+                <FormattedString>
+                    <Span Text="{Binding AttendeeName}" FontAttributes="Bold" />
+                    <Span Text=" — " />
+                    <Span Text="{Binding EventName}" />
+                </FormattedString>
+            </Label.FormattedText>
+        </Label>
+
+        <Border Grid.Row="2" Stroke="Gray" StrokeThickness="2" StrokeShape="RoundRectangle 12" BackgroundColor="White">
+            <Grid>
+                <Label Text="Sign here" TextColor="LightGray" FontSize="28" HorizontalOptions="Center"
+                       VerticalOptions="End" Margin="0,0,0,30" InputTransparent="True" />
+                <BoxView HeightRequest="1" Color="LightGray" VerticalOptions="End" Margin="30,0,30,70" InputTransparent="True" />
+                <toolkit:DrawingView x:Name="Pad" LineColor="Black" LineWidth="4"
+                                     IsMultiLineModeEnabled="True" ShouldClearOnFinish="False"
+                                     BackgroundColor="Transparent" />
+            </Grid>
+        </Border>
+
+        <HorizontalStackLayout Grid.Row="3" Spacing="8">
+            <CheckBox IsChecked="{Binding Agreed}" />
+            <Label Text="{Binding TermsText}"
+                   VerticalOptions="Center" LineBreakMode="WordWrap" MaximumWidthRequest="700" />
+        </HorizontalStackLayout>
+
+        <HorizontalStackLayout Grid.Row="4" Spacing="12" HorizontalOptions="Center">
+            <Button Text="Clear" Clicked="OnClearClicked" BackgroundColor="Gray" WidthRequest="140" />
+            <Button Text="✔ Complete Check-In" Clicked="OnSubmitClicked" WidthRequest="220" />
+            <ActivityIndicator IsRunning="{Binding IsBusy}" />
+        </HorizontalStackLayout>
+    </Grid>
+</ContentPage>

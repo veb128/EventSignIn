@@ -1,0 +1,22 @@
+--shared
+--gc-sections
+-z relro
+-z noexecstack
+-z now
+--enable-new-dtags
+--build-id=sha1
+--warn-shared-textrel
+--fatal-warnings
+--no-rosegment
+--export-dynamic
+--allow-shlib-undefined
+-soname libxamarin-app-clr.so
+-m elf_x86_64
+-z max-page-size=16384
+-L /usr/local/share/dotnet/packs/Microsoft.Android.Runtime.CoreCLR.37.android-x64/37.2.31/runtimes/android-x64/native
+obj/Debug/net11.0-android/android/typemaps.x86_64.o
+obj/Debug/net11.0-android/android/environment.x86_64.o
+obj/Debug/net11.0-android/android/compressed_assemblies.x86_64.o
+obj/Debug/net11.0-android/android/marshal_methods.x86_64.o
+obj/Debug/net11.0-android/android/jni_remap.x86_64.o
+-lc

@@ -1,0 +1,6 @@
+/tmp/eci-pub/linux-arm64/appsettings.Development.json
+/tmp/eci-pub/linux-arm64/appsettings.json
+/tmp/eci-pub/linux-arm64/global.json
+/tmp/eci-pub/linux-arm64/EventCheckIn.Server.pdb
+/tmp/eci-pub/linux-arm64/libe_sqlite3.so
+/tmp/eci-pub/linux-arm64/EventCheckIn.Server

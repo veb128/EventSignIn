@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:EventCheckIn.ViewModels"
+             x:Class="EventCheckIn.Views.CompletePage"
+             x:DataType="vm:CompleteViewModel"
+             Shell.BackButtonBehavior="{BackButtonBehavior IsVisible=False}"
+             Title="Checked In">
+    <VerticalStackLayout Padding="30" Spacing="20" VerticalOptions="Center">
+        <Image Source="{Binding Logo}" IsVisible="{Binding HasLogo}" HeightRequest="90" Aspect="AspectFit" />
+        <Label Text="✅" FontSize="72" HorizontalOptions="Center" />
+        <Border StrokeShape="Ellipse" WidthRequest="180" HeightRequest="180" HorizontalOptions="Center" IsVisible="{Binding HasPhoto}">
+            <Image Source="{Binding Photo}" Aspect="AspectFill" />
+        </Border>
+        <Label Text="{Binding Message}" FontSize="24" HorizontalTextAlignment="Center" />
+        <Button Text="Next Attendee" Command="{Binding NextAttendeeCommand}" FontSize="20"
+                HorizontalOptions="Center" WidthRequest="240" />
+    </VerticalStackLayout>
+</ContentPage>

@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:EventCheckIn.ViewModels"
+             xmlns:svc="clr-namespace:EventCheckIn.Services"
+             x:Class="EventCheckIn.Views.SettingsPage"
+             x:DataType="vm:SettingsViewModel"
+             Title="Kiosk Settings">
+    <ScrollView>
+        <VerticalStackLayout Padding="30" Spacing="14" MaximumWidthRequest="640">
+
+            <Label Text="Host connection" FontSize="22" FontAttributes="Bold" />
+            <Border Padding="14" StrokeShape="RoundRectangle 10">
+                <VerticalStackLayout Spacing="6">
+                    <Label Text="{Binding PairedWith}" FontAttributes="Bold" />
+                    <Label Text="{Binding Sync.StatusText}" TextColor="Gray" />
+                    <HorizontalStackLayout Spacing="10">
+                        <Button Text="Sync now" Command="{Binding SyncNowCommand}" IsVisible="{Binding IsPaired}" />
+                        <Button Text="Unpair" Command="{Binding UnpairCommand}" IsVisible="{Binding IsPaired}" BackgroundColor="Gray" />
+                    </HorizontalStackLayout>
+                </VerticalStackLayout>
+            </Border>
+
+            <Label Text="Kiosk name" FontAttributes="Bold" />
+            <Entry Text="{Binding KioskName}" Placeholder="Front desk 1" />
+
+            <Label Text="Pair with a host" FontSize="22" FontAttributes="Bold" Margin="0,16,0,0" />
+            <Label Text="1. Join this device to the host's Wi-Fi.  2. Find the host.  3. Enter the PIN shown on the host's dashboard."
+                   TextColor="Gray" />
+
+            <Button Text="🔍 Find hosts on this network" Command="{Binding DiscoverCommand}" />
+
+            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
+                <Entry Text="{Binding ManualAddress}" Placeholder="…or type address, e.g. 192.168.137.1" Keyboard="Url" />
+                <Button Grid.Column="1" Text="Add" Command="{Binding AddManualCommand}" />
+            </Grid>
+
+            <CollectionView ItemsSource="{Binding Servers}" SelectionMode="Single"
+                            SelectedItem="{Binding SelectedServer}" HeightRequest="120">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="svc:FoundServer">
+                        <Label Text="{Binding Display}" Padding="10" FontSize="16" />
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
+            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10" IsVisible="{Binding CanPair}">
+                <Entry Text="{Binding Pin}" Placeholder="6-digit PIN" Keyboard="Numeric" MaxLength="6" />
+                <Button Grid.Column="1" Text="Pair" Command="{Binding PairCommand}" />
+            </Grid>
+
+            <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" />
+            <Label Text="{Binding Message}" TextColor="{StaticResource Primary}" />
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

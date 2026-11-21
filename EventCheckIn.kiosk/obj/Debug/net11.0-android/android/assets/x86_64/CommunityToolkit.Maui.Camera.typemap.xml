@@ -1,0 +1,16 @@
+<api type="debug" assembly-name="CommunityToolkit.Maui.Camera" assembly-full-name="CommunityToolkit.Maui.Camera, Version=8.0.0.0, Culture=neutral, PublicKeyToken=null" mvid="a408f6740f1847feaaa0aed677e84a13">
+  <java-to-managed>
+    <entry java-name="crc64f1558ff7e185dbfc/CameraConsumer" managed-name="CommunityToolkit.Maui.Core.CameraConsumer, CommunityToolkit.Maui.Camera" managed-type-token-id="33554441" />
+    <entry java-name="crc64f1558ff7e185dbfc/CameraManager_ImageCallBack" managed-name="CommunityToolkit.Maui.Core.CameraManager+ImageCallBack, CommunityToolkit.Maui.Camera" managed-type-token-id="33554472" />
+    <entry java-name="crc64f1558ff7e185dbfc/CameraManager_ResolutionFilter" managed-name="CommunityToolkit.Maui.Core.CameraManager+ResolutionFilter, CommunityToolkit.Maui.Camera" managed-type-token-id="33554473" />
+    <entry java-name="crc64f1558ff7e185dbfc/CameraManager_OrientationListener" managed-name="CommunityToolkit.Maui.Core.CameraManager+OrientationListener, CommunityToolkit.Maui.Camera" managed-type-token-id="33554474" />
+    <entry java-name="crc64f1558ff7e185dbfc/CameraManager_ActivityResumedObserver" managed-name="CommunityToolkit.Maui.Core.CameraManager+ActivityResumedObserver, CommunityToolkit.Maui.Camera" managed-type-token-id="33554475" />
+  </java-to-managed>
+  <managed-to-java>
+    <entry java-name="crc64f1558ff7e185dbfc/CameraConsumer" managed-name="CommunityToolkit.Maui.Core.CameraConsumer, CommunityToolkit.Maui.Camera" managed-type-token-id="33554441" />
+    <entry java-name="crc64f1558ff7e185dbfc/CameraManager_ImageCallBack" managed-name="CommunityToolkit.Maui.Core.CameraManager+ImageCallBack, CommunityToolkit.Maui.Camera" managed-type-token-id="33554472" />
+    <entry java-name="crc64f1558ff7e185dbfc/CameraManager_ResolutionFilter" managed-name="CommunityToolkit.Maui.Core.CameraManager+ResolutionFilter, CommunityToolkit.Maui.Camera" managed-type-token-id="33554473" />
+    <entry java-name="crc64f1558ff7e185dbfc/CameraManager_OrientationListener" managed-name="CommunityToolkit.Maui.Core.CameraManager+OrientationListener, CommunityToolkit.Maui.Camera" managed-type-token-id="33554474" />
+    <entry java-name="crc64f1558ff7e185dbfc/CameraManager_ActivityResumedObserver" managed-name="CommunityToolkit.Maui.Core.CameraManager+ActivityResumedObserver, CommunityToolkit.Maui.Camera" managed-type-token-id="33554475" />
+  </managed-to-java>
+</api>

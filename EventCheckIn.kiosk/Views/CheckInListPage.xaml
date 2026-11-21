@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:EventCheckIn.ViewModels"
+             x:Class="EventCheckIn.Views.CheckInListPage"
+             x:DataType="vm:CheckInListViewModel"
+             Title="Check-Ins">
+    <Grid RowDefinitions="Auto,*" Padding="20" RowSpacing="10">
+        <VerticalStackLayout>
+            <Label Text="{Binding Summary}" FontSize="20" FontAttributes="Bold" />
+            <Label Text="{Binding StorageFolder, StringFormat='Saved to: {0}'}" FontSize="12" TextColor="Gray" />
+        </VerticalStackLayout>
+        <CollectionView Grid.Row="1" ItemsSource="{Binding Items}" EmptyView="No check-ins yet.">
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="vm:CheckInRow">
+                    <Grid ColumnDefinitions="70,*,140" Padding="0,8" ColumnSpacing="12">
+                        <Border StrokeShape="Ellipse" WidthRequest="60" HeightRequest="60">
+                            <Image Source="{Binding Photo}" Aspect="AspectFill" />
+                        </Border>
+                        <VerticalStackLayout Grid.Column="1" VerticalOptions="Center">
+                            <Label Text="{Binding Name}" FontAttributes="Bold" FontSize="16" />
+                            <Label Text="{Binding Details}" TextColor="Gray" FontSize="13" />
+                        </VerticalStackLayout>
+                        <Image Grid.Column="2" Source="{Binding Signature}" HeightRequest="50" BackgroundColor="White" />
+                    </Grid>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+    </Grid>
+</ContentPage>

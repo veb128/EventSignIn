@@ -1,0 +1,884 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ReferenceNativeSymbol Include="_OBJC_CLASS_$_MauiCALayerAutosizeToSuperLayerBehavior">
+      <SymbolType>ObjectiveCClass</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_MauiCALayerAutosizeToSuperLayerBehavior_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_UIApplicationMain">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_release_managed_ref">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_set_gchandle_with_flags_safe">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_locate_assembly_resource">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_switch_gchandle">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_mono_object_retain">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_is_user_type">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_log">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_release_block_on_main_thread">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_get_gchandle">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_get_block_descriptor">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_PHPickerResult_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_PHPickerViewController_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_LPLinkMetadata_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_CNContactPickerViewController_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_MPVolumeView_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_WKWebView_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_WKPreferences_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_WKContextMenuElementInfo_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_WKFrameInfo_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_WKHTTPCookieStore_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_WKNavigation_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_WKNavigationAction_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_WKProcessPool_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_WKScriptMessage_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_WKUserContentController_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_WKUserScript_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_WKWebpagePreferences_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_WKWebsiteDataRecord_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_WKWebsiteDataStore_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_WKWebViewConfiguration_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_NSLayoutConstraint_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_UIButtonConfiguration_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_NSLayoutManager_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_UIApplication_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_UIBarButtonItem_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_UIBarItem_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_UIBezierPath_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_UIButton_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_UICollectionView_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_UICollectionViewLayout_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_UICollectionViewLayoutAttributes_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_UIColor_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_UIControl_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_UIDevice_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_UIEvent_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_UIFont_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_UIFontDescriptor_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_UIGestureRecognizer_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_UILongPressGestureRecognizer_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_UITapGestureRecognizer_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_UIPanGestureRecognizer_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_UIPinchGestureRecognizer_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_UISwipeGestureRecognizer_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_UIHoverGestureRecognizer_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_UIImage_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_UIImagePickerController_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_UIMenu_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_UINavigationBar_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_UINavigationController_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_UIPickerView_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_UIPopoverPresentationController_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_UIPresentationController_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_UIScreen_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_UISearchBar_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_UISearchController_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_UITableView_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_UITableViewCell_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_UITextField_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_UITextView_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_UIView_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_UIViewController_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_UIWindowScene_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_UITraitCollection_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_NSCollectionLayoutBoundarySupplementaryItem_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_NSCollectionLayoutDimension_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_NSCollectionLayoutGroup_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_NSCollectionLayoutItem_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_NSCollectionLayoutSection_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_NSCollectionLayoutSize_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_NSCollectionLayoutSpacing_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_NSCollectionLayoutSupplementaryItem_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_NSLayoutAnchor_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_NSLayoutDimension_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_NSLayoutXAxisAnchor_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_NSLayoutYAxisAnchor_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_NSMutableParagraphStyle_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_NSParagraphStyle_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_NSShadow_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_NSTextAttachment_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_NSTextBlock_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_NSTextContainer_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_NSTextList_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_NSTextStorage_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_NSTextTab_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_UIAccessibilityElement_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_UIAction_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_UIActivityIndicatorView_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_UIActivityViewController_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_UIAlertAction_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_UIAlertController_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_UIApplicationShortcutIcon_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_UIApplicationShortcutItem_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_UIBarAppearance_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_UIBarButtonItemAppearance_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_UIBarButtonItemBadge_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_UIBarButtonItemGroup_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_UIBarButtonItemStateAppearance_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_UIBlurEffect_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_UICollectionReusableView_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_UICollectionViewCell_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_UICollectionViewCompositionalLayout_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_UICollectionViewCompositionalLayoutConfiguration_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_UICollectionViewController_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_UICollectionViewFlowLayout_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_UICollectionViewFlowLayoutInvalidationContext_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_UICollectionViewLayoutInvalidationContext_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_UICollectionViewUpdateItem_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_UICommand_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_UIContextMenuConfiguration_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_UIContextMenuInteraction_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_UIDatePicker_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_UIDocumentPickerViewController_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_UIDragInteraction_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_UIDragItem_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_UIDragPreview_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_UIDropInteraction_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_UIDropProposal_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_UIFocusAnimationCoordinator_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_UIFocusEffect_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_UIFocusHaloEffect_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_UIFocusUpdateContext_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_UIFontMetrics_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_UIGraphicsImageRenderer_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_UIGraphicsImageRendererContext_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_UIGraphicsImageRendererFormat_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_UIGraphicsRenderer_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_UIGraphicsRendererContext_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_UIGraphicsRendererFormat_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_UIImageConfiguration_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_UIImageSymbolConfiguration_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_UIImageView_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_UIKeyCommand_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_UILabel_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_UIListContentConfiguration_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_UIListContentTextProperties_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_UIMenuElement_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_UIMenuSystem_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_UINavigationBarAppearance_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_UINavigationItem_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_UIOpenURLContext_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_UIPageControl_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_UIPress_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_UIProgressView_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_UIRefreshControl_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_UIResponder_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_UIScene_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_UISceneActivationRequestOptions_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_UISceneConfiguration_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_UISceneConnectionOptions_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_UISceneDestructionRequestOptions_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_UISceneSession_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_UISceneSessionActivationRequest_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_UISceneSizeRestrictions_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_UISceneWindowingBehaviors_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_UIScrollView_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_UISearchTextField_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_UISlider_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_UIStackView_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_UIStatusBarManager_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_UIStepper_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_UISwitch_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_UITab_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_UITabBar_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_UITabBarAppearance_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_UITabBarController_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_UITabBarItem_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_UITabBarItemAppearance_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_UITabBarItemStateAppearance_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_UITabGroup_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_UITableViewController_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_UITableViewHeaderFooterView_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_UITextInputAssistantItem_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_UITextPosition_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_UITextRange_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_UIToolbar_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_UIToolTipInteraction_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_UITouch_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_UITraitUserInterfaceStyle_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_UIViewPropertyAnimator_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_UIVisualEffect_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_UIVisualEffectView_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_UIWindow_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_UIWindowSceneGeometry_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_UIWindowSceneGeometryPreferences_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_UIWindowSceneGeometryPreferencesMac_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_CMAccelerometerData_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_CMLogItem_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_CMMotionManager_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_CLLocationManager_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_CLLocation_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_CIContext_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_CIImage_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_NSValue_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_NSIndexPath_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_NSArray_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_NSAttributedString_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_NSBundle_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_NSCoder_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_NSData_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_NSDate_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_NSDateComponents_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_NSDictionary_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_NSError_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_NSHTTPCookie_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_NSIndexSet_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_NSInputStream_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_NSItemProvider_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_NSMutableAttributedString_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_NSMutableData_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_NSMutableDictionary_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_NSURLRequest_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_NSMutableURLRequest_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_NSNotificationCenter_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_NSNull_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_NSNumber_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_NSObject_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle___NSObject_Disposer_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_NSRunLoop_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_NSSet_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_NSStream_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_NSString_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_NSThread_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_NSTimeZone_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_NSUndoManager_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_NSURL_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_NSURLCredential_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_NSURLProtectionSpace_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_NSURLSessionConfiguration_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_NSUserDefaults_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_NSAutoreleasePool_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_NSCache_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_NSCachedURLResponse_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_NSCalendar_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_NSEnumerator_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_NSException_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_NSHTTPCookieStorage_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_NSHTTPURLResponse_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_NSJSONSerialization_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_NSMutableIndexSet_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_NSNotification_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_NSOperationQueue_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_NSStringDrawingContext_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_NSURLAuthenticationChallenge_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_NSURLCredentialStorage_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_NSURLResponse_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_NSURLSession_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_NSURLSessionDataTask_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_NSURLSessionTask_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_NSUserActivity_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_CABasicAnimation_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_CAAnimation_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_CAGradientLayer_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_CALayer_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_CADisplayLink_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_CAPropertyAnimation_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_CAShapeLayer_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_CNContact_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_CNContactProperty_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_ASAuthorization_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_ASAuthorizationAppleIDCredential_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_ASAuthorizationController_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_ASWebAuthenticationSession_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_AVCaptureDeviceInput_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_AVCaptureFileOutput_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_AVCaptureVideoPreviewLayer_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_AVPlayerLayer_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_AVCaptureConnection_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_AVCaptureDevice_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_AVCaptureDeviceDiscoverySession_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_AVCaptureDeviceFormat_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_AVCaptureDeviceRotationCoordinator_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_AVCaptureInput_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_AVCaptureMovieFileOutput_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_AVCaptureOutput_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_AVCapturePhoto_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_AVCapturePhotoOutput_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_AVCapturePhotoSettings_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_Class_GetHandle_AVCaptureSession_Native">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_NativeHandle_objc_msgSend_NativeHandle_exception">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+    <ReferenceNativeSymbol Include="_xamarin_NativeHandle_objc_msgSendSuper_NativeHandle_exception">
+      <SymbolType>Function</SymbolType>
+    </ReferenceNativeSymbol>
+  </ItemGroup>
+</Project>

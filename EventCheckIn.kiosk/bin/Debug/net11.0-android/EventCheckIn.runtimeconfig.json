@@ -1,0 +1,47 @@
+{
+  "runtimeOptions": {
+    "tfm": "net11.0",
+    "includedFrameworks": [
+      {
+        "name": "Microsoft.NETCore.App",
+        "version": "11.0.0"
+      },
+      {
+        "name": "Microsoft.Android",
+        "version": "**FromWorkload**"
+      },
+      {
+        "name": "Microsoft.Android.Runtimes",
+        "version": "**FromWorkload**"
+      }
+    ],
+    "configProperties": {
+      "Microsoft.Android.Runtime.RuntimeFeature.IsMonoRuntime": false,
+      "Microsoft.Android.Runtime.RuntimeFeature.IsCoreClrRuntime": true,
+      "Microsoft.Android.Runtime.RuntimeFeature.IsNativeAotRuntime": false,
+      "Microsoft.Android.Runtime.RuntimeFeature.ManagedToJavaUsesAssemblyFullName": true,
+      "Microsoft.Maui.RuntimeFeature.EnableMauiAspire": true,
+      "MVVMTOOLKIT_ENABLE_INOTIFYPROPERTYCHANGING_SUPPORT": true,
+      "Microsoft.Extensions.DependencyInjection.VerifyOpenGenericServiceTrimmability": true,
+      "System.ComponentModel.DefaultValueAttribute.IsSupported": true,
+      "System.Globalization.Invariant": false,
+      "System.Linq.Enumerable.IsSizeOptimized": true,
+      "System.Net.Http.UseNativeHttpHandler": true,
+      "System.Net.SocketsHttpHandler.Http3Support": false,
+      "System.Runtime.InteropServices.BuiltInComInterop.IsSupported": false,
+      "System.Runtime.Serialization.EnableUnsafeBinaryFormatterSerialization": false,
+      "System.Text.Encoding.EnableUnsafeUTF7Encoding": false,
+      "System.Text.Json.JsonSerializer.IsReflectionEnabledByDefault": true,
+      "Microsoft.Android.Runtime.RuntimeFeature.TrimmableTypeMap": false,
+      "Java.Interop.RuntimeFeature.ManagedPeerNativeRegistration": true,
+      "Xamarin.Android.Net.UseNegotiateAuthentication": false,
+      "Switch.System.Reflection.ForceInterpretedInvoke": true,
+      "Microsoft.Extensions.DependencyInjection.DisableDynamicEngine": true,
+      "Microsoft.Android.Runtime.RuntimeFeature.ObjectReferenceLogging": true,
+      "System.Runtime.CrashReportBeforeSignalChaining": true,
+      "Microsoft.Maui.RuntimeFeature.IsIVisualAssemblyScanningEnabled": false,
+      "Microsoft.Maui.RuntimeFeature.AreBindingInterceptorsSupported": true,
+      "Microsoft.Maui.RuntimeFeature.IsIncrementalHotReloadEnabled": true
+    }
+  }
+}
