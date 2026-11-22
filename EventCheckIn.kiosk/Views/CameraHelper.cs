@@ -1,3 +1,4 @@
+using CommunityToolkit.Maui.Core;
 using CommunityToolkit.Maui.Views;
 
 namespace EventCheckIn.Views;
@@ -16,12 +17,16 @@ public static class CameraHelper
         return status == PermissionStatus.Granted;
     }
 
-    public static async Task StartAsync(CameraView camera)
+    public static async Task StartAsync(CameraView camera, CameraPosition preferredPosition)
     {
         if (!await EnsurePermissionAsync()) return;
         try
         {
             await WaitForHandlerAsync(camera);
+            var cameras = await camera.GetAvailableCameras(CancellationToken.None);
+            var selected = cameras.FirstOrDefault(c => c.Position == preferredPosition) ?? cameras.FirstOrDefault();
+            if (selected is not null)
+                camera.SelectedCamera = selected;
             await camera.StartCameraPreview(CancellationToken.None);
         }
         catch (Exception ex) { await Shell.Current.DisplayAlertAsync("Camera error", ex.Message, "OK"); }

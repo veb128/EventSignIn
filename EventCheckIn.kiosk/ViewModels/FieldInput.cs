@@ -21,7 +21,12 @@ public partial class FieldInput : ObservableObject
     [ObservableProperty] string text = string.Empty;
     [ObservableProperty] string? selectedOption;
     [ObservableProperty, NotifyPropertyChangedFor(nameof(HasError))] string error = string.Empty;
+    [ObservableProperty] bool isActive = true;
+    [ObservableProperty] Thickness indentMargin = new(0);
     public bool HasError => !string.IsNullOrEmpty(Error);
+    public bool IsConditional => !string.IsNullOrEmpty(Def.ParentFieldId);
+
+    public event EventHandler? AnswerChanged;
 
     public Keyboard Keyboard => Def.Validation.Kind switch
     {
@@ -45,10 +50,27 @@ public partial class FieldInput : ObservableObject
         foreach (var o in Options) o.Owner = this;
     }
 
-    // Clear the error as soon as the attendee fixes the value.
-    partial void OnTextChanged(string value) { if (HasError) Validate(); }
-    partial void OnSelectedOptionChanged(string? value) { if (HasError) Validate(); }
-    internal void OnOptionToggled() { if (HasError) Validate(); }
+    // Clear the error as soon as the attendee fixes the value, and notify dependent questions.
+    partial void OnTextChanged(string value)
+    {
+        if (HasError) Validate();
+        AnswerChanged?.Invoke(this, EventArgs.Empty);
+    }
+    partial void OnSelectedOptionChanged(string? value)
+    {
+        if (HasError) Validate();
+        AnswerChanged?.Invoke(this, EventArgs.Empty);
+    }
+    internal void OnOptionToggled()
+    {
+        if (HasError) Validate();
+        AnswerChanged?.Invoke(this, EventArgs.Empty);
+    }
+
+    partial void OnIsActiveChanged(bool value)
+    {
+        if (!value) Error = string.Empty;
+    }
 
     public List<string> Values => Def.Type switch
     {
@@ -62,6 +84,7 @@ public partial class FieldInput : ObservableObject
 
     public bool Validate()
     {
+        if (!IsActive) { Error = string.Empty; return true; }
         Error = Check() ?? string.Empty;
         return !HasError;
     }

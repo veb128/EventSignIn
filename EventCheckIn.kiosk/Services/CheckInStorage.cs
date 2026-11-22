@@ -40,6 +40,7 @@ public class CheckInStorage
             await File.WriteAllBytesAsync(Path.Combine(folder, name), session.Documents[i].Image);
             record.DocumentFiles.Add(name);
             record.DocumentNames.Add(session.Documents[i].Name);
+            record.DocumentIds.Add(session.Documents[i].DocumentId);
         }
 
         if (session.Signature is not null)
@@ -47,6 +48,9 @@ public class CheckInStorage
             record.SignatureFile = "signature.png";
             await File.WriteAllBytesAsync(Path.Combine(folder, record.SignatureFile), session.Signature);
         }
+
+        record.QrCodeFile = "qrcode.png";
+        await File.WriteAllBytesAsync(Path.Combine(folder, record.QrCodeFile), QrCodeHelper.GeneratePng(record.Id));
 
         await File.WriteAllTextAsync(Path.Combine(folder, "record.json"),
             JsonSerializer.Serialize(record, JsonOptions));

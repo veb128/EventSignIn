@@ -17,7 +17,7 @@ public partial class DocumentsPage : ContentPage
     {
         base.OnAppearing();
         _vm.Load();
-        await CameraHelper.StartAsync(Camera);
+        await CameraHelper.StartAsync(Camera, CameraPosition.Rear);
     }
 
     protected override void OnDisappearing()

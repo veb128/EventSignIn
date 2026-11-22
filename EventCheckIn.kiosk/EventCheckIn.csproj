@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
 		<TargetFrameworks>net11.0-android;net11.0-ios;net11.0-maccatalyst</TargetFrameworks>
@@ -40,7 +40,10 @@
 
 	<!-- Local Android toolchain (only used if these folders exist on this machine) -->
 	<PropertyGroup Condition="$(TargetFramework.Contains('-android'))">
+		<EmbedAssembliesIntoApk>true</EmbedAssembliesIntoApk>
+		<AndroidSdkDirectory Condition="'$(AndroidSdkDirectory)' == '' And Exists('$(LOCALAPPDATA)\Android\Sdk')">$(LOCALAPPDATA)\Android\Sdk</AndroidSdkDirectory>
 		<AndroidSdkDirectory Condition="'$(AndroidSdkDirectory)' == '' And Exists('$(HOME)/Library/Android/sdk')">$(HOME)/Library/Android/sdk</AndroidSdkDirectory>
+		<JavaSdkDirectory Condition="'$(JavaSdkDirectory)' == '' And Exists('C:\Program Files\Microsoft\jdk-21.0.8.9-hotspot')">C:\Program Files\Microsoft\jdk-21.0.8.9-hotspot</JavaSdkDirectory>
 		<JavaSdkDirectory Condition="'$(JavaSdkDirectory)' == '' And Exists('$(HOME)/Library/Java/JavaVirtualMachines/ms-21.0.8/Contents/Home')">$(HOME)/Library/Java/JavaVirtualMachines/ms-21.0.8/Contents/Home</JavaSdkDirectory>
 	</PropertyGroup>
 
@@ -68,6 +71,8 @@
 		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
 		<PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="11.0.0" />
+		<PackageReference Include="QRCoder" Version="1.7.0" />
+		<PackageReference Include="ZXing.Net" Version="0.16.11" />
 	</ItemGroup>
 
 </Project>

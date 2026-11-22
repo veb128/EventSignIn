@@ -17,7 +17,7 @@ public partial class PhotoPage : ContentPage
     {
         base.OnAppearing();
         _vm.Load();
-        if (_vm.IsCapturing) await CameraHelper.StartAsync(Camera);
+        if (_vm.IsCapturing) await CameraHelper.StartAsync(Camera, CameraPosition.Front);
     }
 
     protected override void OnDisappearing()
@@ -29,7 +29,8 @@ public partial class PhotoPage : ContentPage
     async void OnCaptureClicked(object? sender, EventArgs e) =>
         await Camera.CaptureImage(CancellationToken.None);
 
-    async void OnRetakeClicked(object? sender, EventArgs e) => await CameraHelper.StartAsync(Camera);
+    async void OnRetakeClicked(object? sender, EventArgs e) =>
+        await CameraHelper.StartAsync(Camera, CameraPosition.Front);
 
     async void OnMediaCaptured(object? sender, MediaCapturedEventArgs e)
     {

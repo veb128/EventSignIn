@@ -1,4 +1,4 @@
-﻿using CommunityToolkit.Maui;
+using CommunityToolkit.Maui;
 using EventCheckIn.Services;
 using EventCheckIn.ViewModels;
 using EventCheckIn.Views;
@@ -29,7 +29,9 @@ public static class MauiProgram
         builder.Services.AddSingleton<EventConfigService>();
 
         // Pages + view models
-        builder.Services.AddTransient<WelcomePage>().AddTransient<WelcomeViewModel>();
+        builder.Services.AddSingleton<WelcomeViewModel>();
+        builder.Services.AddTransient<WelcomePage>();
+        builder.Services.AddTransient<QrScannerPage>();
         builder.Services.AddTransient<PhotoPage>().AddTransient<PhotoViewModel>();
         builder.Services.AddTransient<DocumentsPage>().AddTransient<DocumentsViewModel>();
         builder.Services.AddTransient<SignaturePage>().AddTransient<SignatureViewModel>();

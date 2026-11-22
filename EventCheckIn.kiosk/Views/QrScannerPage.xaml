@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             x:Class="EventCheckIn.Views.QrScannerPage"
+             Title="Scan Attendee QR Code">
+    <Grid RowDefinitions="Auto,*,Auto,Auto" Padding="20" RowSpacing="12">
+        <Label x:Name="StatusLabel"
+               Text="Point the camera at the attendee's check-in QR code (scans automatically)"
+               FontSize="16" FontAttributes="Bold" HorizontalOptions="Center" HorizontalTextAlignment="Center" />
+
+        <Border Grid.Row="1" StrokeShape="RoundRectangle 16" BackgroundColor="Black">
+            <Grid>
+                <toolkit:CameraView x:Name="Camera" MediaCaptured="OnMediaCaptured" />
+                <Border Stroke="White" StrokeThickness="3" StrokeDashArray="6,4"
+                        WidthRequest="280" HeightRequest="280"
+                        HorizontalOptions="Center" VerticalOptions="Center"
+                        StrokeShape="RoundRectangle 16" InputTransparent="True" />
+            </Grid>
+        </Border>
+
+        <Grid Grid.Row="2" ColumnDefinitions="*,Auto" ColumnSpacing="10" MaximumWidthRequest="540">
+            <Entry x:Name="ManualIdEntry" Placeholder="Or enter/paste check-in code manually…" />
+            <Button Grid.Column="1" Text="Look Up" Clicked="OnManualLookupClicked" />
+        </Grid>
+
+        <HorizontalStackLayout Grid.Row="3" Spacing="12" HorizontalOptions="Center">
+            <Button Text="📷 Scan Now" Clicked="OnScanNowClicked" WidthRequest="160" />
+            <Button Text="🔄 Switch Camera" Clicked="OnSwitchCameraClicked" BackgroundColor="Gray" WidthRequest="160" />
+            <Button Text="Cancel" Clicked="OnCancelClicked" BackgroundColor="Gray" WidthRequest="120" />
+        </HorizontalStackLayout>
+    </Grid>
+</ContentPage>

@@ -10,12 +10,14 @@ public class EventConfig
     public int Version { get; set; }
     public string EventName { get; set; } = "Event Check-In";
     public string WelcomeMessage { get; set; } = "Welcome! Please check in.";
+    public string StartButtonText { get; set; } = "Start Check-In →";
     public bool HasLogo { get; set; }
     public bool CollectPhoto { get; set; } = true;
     public string TermsText { get; set; } =
         "I confirm the information and documents provided are accurate and agree to the event terms.";
     public List<FieldDef> Fields { get; set; } = new();
     public List<DocumentDef> Documents { get; set; } = new();
+    public List<AdminRoleDef> AdminRoles { get; set; } = new();
 
     public static EventConfig CreateDefault() => new()
     {
@@ -25,7 +27,12 @@ public class EventConfig
             new FieldDef { Id = "email", Label = "Email", Type = FieldTypes.Text, Placeholder = "jane@example.com",
                            Validation = new ValidationDef { Kind = ValidationKinds.Email } },
         },
-        Documents = { new DocumentDef { Id = "id", Name = "Photo ID", Instructions = "Driver's licence or passport, photo side up.", Required = true } }
+        Documents = { new DocumentDef { Id = "id", Name = "Photo ID", Instructions = "Driver's licence or passport, photo side up.", Required = true } },
+        AdminRoles =
+        {
+            new AdminRoleDef { Id = "role_full", Name = "Full Admin", AllowedDocumentIds = ["id"] },
+            new AdminRoleDef { Id = "role_staff", Name = "General Staff", AllowedDocumentIds = [] }
+        }
     };
 }
 
@@ -47,9 +54,12 @@ public class FieldDef
     public string Label { get; set; } = "";
     public string Type { get; set; } = FieldTypes.Text;
     public bool Required { get; set; }
+    public bool ShowBeforeStart { get; set; } = true;           // shown on initial screen before clicking Start Check-In
     public string Placeholder { get; set; } = "";
     public List<string> Options { get; set; } = new();          // radio / checkbox / dropdown
     public ValidationDef Validation { get; set; } = new();      // text only
+    public string ParentFieldId { get; set; } = "";             // optional parent choice field Id
+    public List<string> ShowWhenValues { get; set; } = new();   // parent option values that trigger this question
 }
 
 public class ValidationDef
@@ -69,6 +79,18 @@ public class DocumentDef
     public string Name { get; set; } = "";
     public string Instructions { get; set; } = "";
     public bool Required { get; set; } = true;
+    public bool RequirePinToView { get; set; }
+}
+
+public class AdminRoleDef
+{
+    public string Id { get; set; } = "";
+    public string Name { get; set; } = "";
+    public List<string> AllowedDocumentIds { get; set; } = new();
+    public string PinHash { get; set; } = "";
+    public string? NewPin { get; set; }
+    public bool ClearPin { get; set; }
+    public bool HasPin => !string.IsNullOrEmpty(PinHash);
 }
 
 public class FieldAnswer
@@ -94,17 +116,49 @@ public partial class EventService(Store store)
         var json = store.GetOrCreateSetting("event_config", () => JsonSerializer.Serialize(EventConfig.CreateDefault(), Json));
         var cfg = JsonSerializer.Deserialize<EventConfig>(json, Json) ?? EventConfig.CreateDefault();
         cfg.HasLogo = LogoPath() is not null;
+        cfg.AdminRoles ??= new();
+        if (cfg.AdminRoles.Count == 0)
+        {
+            cfg.AdminRoles.Add(new AdminRoleDef
+            {
+                Id = "role_full",
+                Name = "Full Admin",
+                AllowedDocumentIds = cfg.Documents.Select(d => d.Id).ToList()
+            });
+        }
+        return cfg;
+    }
+
+    /// <summary>Returns a public copy of the event config without any AdminRole PinHash secrets.</summary>
+    public EventConfig GetForKiosk()
+    {
+        var cfg = Get();
+        cfg.AdminRoles = new();
         return cfg;
     }
 
     /// <summary>Validates and saves; bumps Version so kiosks pick up the change.</summary>
     public (bool Ok, List<string> Errors, EventConfig? Saved) Save(EventConfig incoming)
     {
-        var errors = Validate(incoming);
-        if (errors.Count > 0) return (false, errors, null);
         lock (_gate)
         {
-            incoming.Version = Get().Version + 1;
+            var current = Get();
+            var existingRoles = current.AdminRoles.ToDictionary(r => r.Id, r => r);
+            incoming.AdminRoles ??= new();
+            foreach (var r in incoming.AdminRoles)
+            {
+                var oldHash = existingRoles.TryGetValue(r.Id ?? "", out var prev) ? prev.PinHash : "";
+                if (r.ClearPin) r.PinHash = "";
+                else if (!string.IsNullOrWhiteSpace(r.NewPin)) r.PinHash = Store.Hash(r.NewPin.Trim());
+                else r.PinHash = oldHash;
+                r.NewPin = null;
+                r.ClearPin = false;
+            }
+
+            var errors = Validate(incoming);
+            if (errors.Count > 0) return (false, errors, null);
+
+            incoming.Version = current.Version + 1;
             incoming.HasLogo = LogoPath() is not null;
             store.SetSetting("event_config", JsonSerializer.Serialize(incoming, Json));
             return (true, errors, incoming);
@@ -128,6 +182,8 @@ public partial class EventService(Store store)
         if (c.EventName.Length is 0 or > 120) e.Add("Event name is required (max 120 characters).");
         c.WelcomeMessage ??= ""; c.TermsText ??= "";
         if (c.WelcomeMessage.Length > 500) e.Add("Welcome message is too long (max 500).");
+        c.StartButtonText = string.IsNullOrWhiteSpace(c.StartButtonText) ? "Start Check-In →" : c.StartButtonText.Trim();
+        if (c.StartButtonText.Length > 80) e.Add("Start check-in button text is too long (max 80).");
         if (c.TermsText.Length > 2000) e.Add("Terms text is too long (max 2000).");
         c.Fields ??= new(); c.Documents ??= new();
         if (c.Fields.Count > 50) e.Add("Too many fields (max 50).");
@@ -163,6 +219,46 @@ public partial class EventService(Store store)
                     if (string.IsNullOrWhiteSpace(v.Pattern)) e.Add($"{name}: pattern is required for custom validation.");
                 }
             }
+            f.ParentFieldId = f.ParentFieldId?.Trim() ?? "";
+            f.ShowWhenValues = (f.ShowWhenValues ?? new()).Select(v => v?.Trim() ?? "").Where(v => v.Length > 0).Distinct().ToList();
+            if (f.ParentFieldId.Length == 0) f.ShowWhenValues = new();
+        }
+
+        var fieldMap = c.Fields.Where(f => !string.IsNullOrEmpty(f.Id)).GroupBy(f => f.Id).ToDictionary(g => g.Key, g => g.First());
+        foreach (var f in c.Fields.Where(f => !string.IsNullOrEmpty(f.ParentFieldId)))
+        {
+            var name = f.Label.Length > 0 ? $"Field \"{f.Label}\"" : "A field";
+            if (f.ParentFieldId == f.Id)
+            {
+                e.Add($"{name}: a question cannot depend on itself.");
+                continue;
+            }
+            if (!fieldMap.TryGetValue(f.ParentFieldId, out var parent))
+            {
+                e.Add($"{name}: depends on an unknown question.");
+                continue;
+            }
+            if (parent.Type == FieldTypes.Text)
+            {
+                e.Add($"{name}: cannot depend on \"{parent.Label}\" because free text questions do not have a fixed list of answers.");
+                continue;
+            }
+            f.ShowWhenValues = f.ShowWhenValues.Where(v => parent.Options.Contains(v)).ToList();
+            if (f.ShowWhenValues.Count == 0)
+                e.Add($"{name}: select at least one answer of \"{parent.Label}\" that triggers this follow-up question.");
+
+            // Check for dependency cycles
+            var visited = new HashSet<string> { f.Id };
+            var curr = parent;
+            while (curr is not null && !string.IsNullOrEmpty(curr.ParentFieldId))
+            {
+                if (!visited.Add(curr.Id))
+                {
+                    e.Add($"{name}: circular dependency detected.");
+                    break;
+                }
+                fieldMap.TryGetValue(curr.ParentFieldId, out curr);
+            }
         }
         foreach (var d in c.Documents)
         {
@@ -171,6 +267,19 @@ public partial class EventService(Store store)
             if (d.Name.Length is 0 or > 80) e.Add($"{name}: name is required (max 80).");
             if (!IdPattern().IsMatch(d.Id ?? "")) e.Add($"{name}: invalid id.");
             else if (!ids.Add("d:" + d.Id)) e.Add($"{name}: duplicate id \"{d.Id}\".");
+        }
+
+        c.AdminRoles ??= new();
+        if (c.AdminRoles.Count > 20) e.Add("Too many admin roles (max 20).");
+        var docIds = c.Documents.Select(d => d.Id).ToHashSet();
+        foreach (var r in c.AdminRoles)
+        {
+            r.Name = r.Name?.Trim() ?? "";
+            var rname = r.Name.Length > 0 ? $"Admin role \"{r.Name}\"" : "An admin role";
+            if (r.Name.Length is 0 or > 60) e.Add($"{rname}: name is required (max 60).");
+            if (!IdPattern().IsMatch(r.Id ?? "")) e.Add($"{rname}: invalid id.");
+            else if (!ids.Add("r:" + r.Id)) e.Add($"{rname}: duplicate id \"{r.Id}\".");
+            r.AllowedDocumentIds = (r.AllowedDocumentIds ?? new()).Where(docIds.Contains).Distinct().ToList();
         }
         return e;
     }

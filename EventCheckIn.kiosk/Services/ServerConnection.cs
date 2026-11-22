@@ -42,6 +42,20 @@ public class ServerConnection
         get => Preferences.Get("kiosk_name", DeviceInfo.Name);
         set => Preferences.Set("kiosk_name", value);
     }
+    public bool IsAdminMode
+    {
+        get => Preferences.Get("is_admin_mode", false);
+        set => Preferences.Set("is_admin_mode", value);
+    }
+    public bool IsModeLocked
+    {
+        get => Preferences.Get("is_mode_locked", false);
+        set => Preferences.Set("is_mode_locked", value);
+    }
+    public string? AdminSessionToken { get; private set; }
+    public string AdminUserName { get; private set; } = string.Empty;
+    public string AdminRoleName { get; private set; } = string.Empty;
+    public bool IsAdminAuthenticated => !string.IsNullOrEmpty(AdminSessionToken);
     string? _token;
     bool _tokenLoaded;
 
@@ -162,14 +176,14 @@ public class ServerConnection
 
     // ---------------- pairing ----------------
 
-    public async Task<(bool Ok, string? Error)> PairAsync(FoundServer server, string pin, CancellationToken ct = default)
+    public async Task<(bool Ok, string? Error)> PairAsync(FoundServer server, string pin, bool isAdmin, CancellationToken ct = default)
     {
         try
         {
             using var cts = CancellationTokenSource.CreateLinkedTokenSource(ct);
             cts.CancelAfter(TimeSpan.FromSeconds(10));
             var resp = await Http.PostAsJsonAsync($"{server.BaseUrl}/api/pair",
-                new { pin, kioskName = KioskName }, Json, cts.Token);
+                new { pin, kioskName = KioskName, isAdmin }, Json, cts.Token);
             var body = await resp.Content.ReadFromJsonAsync<PairResponse>(Json, cts.Token);
             if (!resp.IsSuccessStatusCode || string.IsNullOrEmpty(body?.Token))
                 return (false, body?.Error ?? $"Server returned {(int)resp.StatusCode}");
@@ -177,6 +191,8 @@ public class ServerConnection
             BaseUrl = server.BaseUrl;
             ServerName = server.Name;
             Token = body.Token;
+            IsAdminMode = isAdmin;
+            IsModeLocked = false;
             return (true, null);
         }
         catch (Exception ex) { return (false, ex.Message); }
@@ -185,23 +201,155 @@ public class ServerConnection
     public void Unpair()
     {
         Token = null;
+        ClearAdminSession();
+        IsModeLocked = false;
+        IsAdminMode = false;
         Preferences.Remove("server_url");
         Preferences.Remove("server_name");
     }
 
-    public async Task<bool> PingAsync(CancellationToken ct = default)
+    public async Task<(bool Ok, string? Error)> SelectKioskModeAsync(bool isAdmin, CancellationToken ct = default)
     {
-        if (!IsPaired) return false;
+        if (!IsPaired)
+        {
+            IsAdminMode = isAdmin;
+            IsModeLocked = !isAdmin;
+            return (true, null);
+        }
+        try
+        {
+            using var req = new HttpRequestMessage(HttpMethod.Post, $"{BaseUrl}/api/kiosk/select-mode")
+            {
+                Content = JsonContent.Create(new { isAdmin }, options: Json)
+            };
+            req.Headers.Authorization = new AuthenticationHeaderValue("Bearer", Token);
+            using var cts = CancellationTokenSource.CreateLinkedTokenSource(ct);
+            cts.CancelAfter(TimeSpan.FromSeconds(10));
+            using var resp = await Http.SendAsync(req, cts.Token);
+            if (!resp.IsSuccessStatusCode)
+            {
+                var err = await resp.Content.ReadFromJsonAsync<PairResponse>(Json, cts.Token);
+                return (false, err?.Error ?? $"Server returned {(int)resp.StatusCode}");
+            }
+            IsAdminMode = isAdmin;
+            IsModeLocked = !isAdmin;
+            return (true, null);
+        }
+        catch (Exception ex) { return (false, ex.Message); }
+    }
+
+    public void ClearAdminSession()
+    {
+        AdminSessionToken = null;
+        AdminUserName = string.Empty;
+        AdminRoleName = string.Empty;
+    }
+
+    public record AdminLoginResult(bool Ok, bool MustResetPin, string DisplayName, string RoleName, string? Error);
+
+    public async Task<AdminLoginResult> AdminLoginAsync(string username, string pin, CancellationToken ct = default)
+    {
+        if (!IsPaired) return new(false, false, "", "", "Tablet is not paired with a host.");
+        try
+        {
+            using var req = new HttpRequestMessage(HttpMethod.Post, $"{BaseUrl}/api/admin/login")
+            {
+                Content = JsonContent.Create(new { username, pin }, options: Json)
+            };
+            req.Headers.Authorization = new AuthenticationHeaderValue("Bearer", Token);
+            using var cts = CancellationTokenSource.CreateLinkedTokenSource(ct);
+            cts.CancelAfter(TimeSpan.FromSeconds(10));
+            using var resp = await Http.SendAsync(req, cts.Token);
+            var body = await resp.Content.ReadFromJsonAsync<AdminLoginResponse>(Json, cts.Token);
+            if (!resp.IsSuccessStatusCode)
+                return new(false, false, "", "", body?.Error ?? $"Login failed ({(int)resp.StatusCode})");
+
+            if (body?.MustResetPin == true)
+                return new(true, true, body.DisplayName ?? username, "", null);
+
+            AdminSessionToken = body?.SessionToken;
+            AdminUserName = body?.DisplayName ?? username;
+            AdminRoleName = body?.RoleName ?? "";
+            return new(true, false, AdminUserName, AdminRoleName, null);
+        }
+        catch (Exception ex) { return new(false, false, "", "", ex.Message); }
+    }
+
+    public async Task<AdminLoginResult> AdminResetPinAsync(string username, string currentPin, string newPin, CancellationToken ct = default)
+    {
+        if (!IsPaired) return new(false, false, "", "", "Tablet is not paired with a host.");
+        try
+        {
+            using var req = new HttpRequestMessage(HttpMethod.Post, $"{BaseUrl}/api/admin/reset-pin")
+            {
+                Content = JsonContent.Create(new { username, currentPin, newPin }, options: Json)
+            };
+            req.Headers.Authorization = new AuthenticationHeaderValue("Bearer", Token);
+            using var cts = CancellationTokenSource.CreateLinkedTokenSource(ct);
+            cts.CancelAfter(TimeSpan.FromSeconds(10));
+            using var resp = await Http.SendAsync(req, cts.Token);
+            var body = await resp.Content.ReadFromJsonAsync<AdminLoginResponse>(Json, cts.Token);
+            if (!resp.IsSuccessStatusCode || string.IsNullOrEmpty(body?.SessionToken))
+                return new(false, false, "", "", body?.Error ?? $"PIN reset failed ({(int)resp.StatusCode})");
+
+            AdminSessionToken = body.SessionToken;
+            AdminUserName = body.DisplayName ?? username;
+            AdminRoleName = body.RoleName ?? "";
+            return new(true, false, AdminUserName, AdminRoleName, null);
+        }
+        catch (Exception ex) { return new(false, false, "", "", ex.Message); }
+    }
+
+    public async Task AdminLogoutAsync(CancellationToken ct = default)
+    {
+        var session = AdminSessionToken;
+        ClearAdminSession();
+        if (!IsPaired || string.IsNullOrEmpty(session)) return;
+        try
+        {
+            using var req = new HttpRequestMessage(HttpMethod.Post, $"{BaseUrl}/api/admin/logout");
+            req.Headers.Authorization = new AuthenticationHeaderValue("Bearer", Token);
+            req.Headers.Add("X-Admin-Session", session);
+            using var cts = CancellationTokenSource.CreateLinkedTokenSource(ct);
+            cts.CancelAfter(TimeSpan.FromSeconds(5));
+            using var resp = await Http.SendAsync(req, cts.Token);
+        }
+        catch { }
+    }
+
+    public record PingResult(bool Online, bool Unauthorized, bool ShowSettings, bool IsAdmin, bool ModeLocked, bool AdminAuthenticated, string AdminUserName, string AdminRoleName);
+
+    public async Task<PingResult> PingAsync(CancellationToken ct = default)
+    {
+        if (!IsPaired) return new(false, true, true, IsAdminMode, IsModeLocked, false, "", "");
         try
         {
             using var req = new HttpRequestMessage(HttpMethod.Get, $"{BaseUrl}/api/ping");
             req.Headers.Authorization = new AuthenticationHeaderValue("Bearer", Token);
+            if (!string.IsNullOrEmpty(AdminSessionToken))
+                req.Headers.Add("X-Admin-Session", AdminSessionToken);
             using var cts = CancellationTokenSource.CreateLinkedTokenSource(ct);
             cts.CancelAfter(TimeSpan.FromSeconds(3));
             using var resp = await Http.SendAsync(req, cts.Token);
-            return resp.IsSuccessStatusCode;
+            if (resp.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+                return new(false, true, true, IsAdminMode, IsModeLocked, false, "", "");
+            if (!resp.IsSuccessStatusCode)
+                return new(false, false, false, IsAdminMode, IsModeLocked, IsAdminAuthenticated, AdminUserName, AdminRoleName);
+            var body = await resp.Content.ReadFromJsonAsync<PingResponse>(Json, cts.Token);
+            var isAdmin = body?.IsAdmin ?? IsAdminMode;
+            var modeLocked = body?.ModeLocked ?? IsModeLocked;
+            IsAdminMode = isAdmin;
+            IsModeLocked = modeLocked;
+            if (body?.AdminAuthenticated == false)
+                ClearAdminSession();
+            else if (body?.AdminAuthenticated == true)
+            {
+                AdminUserName = body.AdminUserName ?? AdminUserName;
+                AdminRoleName = body.AdminRoleName ?? AdminRoleName;
+            }
+            return new(true, false, body?.ShowSettings ?? false, isAdmin, modeLocked, body?.AdminAuthenticated ?? false, AdminUserName, AdminRoleName);
         }
-        catch { return false; }
+        catch { return new(false, false, false, IsAdminMode, IsModeLocked, IsAdminAuthenticated, AdminUserName, AdminRoleName); }
     }
 
     // ---------------- event ----------------
@@ -217,6 +365,39 @@ public class ServerConnection
     public Task<byte[]?> DownloadLogoAsync(CancellationToken ct = default) =>
         GetAuthorizedAsync("/api/event/logo", TimeSpan.FromSeconds(30), ct);
 
+    public async Task<List<CheckInRecord>?> GetCheckInsAsync(CancellationToken ct = default)
+    {
+        var bytes = await GetAuthorizedAsync("/api/checkins", TimeSpan.FromSeconds(15), ct);
+        if (bytes is null) return null;
+        try { return JsonSerializer.Deserialize<List<CheckInRecord>>(bytes, Json); }
+        catch (JsonException) { return null; }
+    }
+
+    public Task<byte[]?> DownloadCheckInFileAsync(string id, string? fileName, CancellationToken ct = default) =>
+        string.IsNullOrEmpty(fileName) ? Task.FromResult<byte[]?>(null)
+            : GetAuthorizedAsync($"/api/files/{id}/{fileName}", TimeSpan.FromSeconds(15), ct);
+
+    public async Task<(byte[]? Bytes, string? Error)> DownloadProtectedDocumentAsync(string id, string fileName, string pin, CancellationToken ct = default)
+    {
+        if (!IsPaired) return (null, "Kiosk is not paired.");
+        try
+        {
+            using var req = new HttpRequestMessage(HttpMethod.Get, $"{BaseUrl}/api/files/{id}/{fileName}");
+            req.Headers.Authorization = new AuthenticationHeaderValue("Bearer", Token);
+            if (!string.IsNullOrEmpty(AdminSessionToken))
+                req.Headers.Add("X-Admin-Session", AdminSessionToken);
+            req.Headers.Add("X-Admin-Pin", pin);
+            using var cts = CancellationTokenSource.CreateLinkedTokenSource(ct);
+            cts.CancelAfter(TimeSpan.FromSeconds(15));
+            using var resp = await Http.SendAsync(req, cts.Token);
+            if (resp.IsSuccessStatusCode)
+                return (await resp.Content.ReadAsByteArrayAsync(cts.Token), null);
+            var err = await resp.Content.ReadFromJsonAsync<PairResponse>(Json, cts.Token);
+            return (null, err?.Error ?? $"Access denied ({(int)resp.StatusCode})");
+        }
+        catch (Exception ex) { return (null, ex.Message); }
+    }
+
     async Task<byte[]?> GetAuthorizedAsync(string path, TimeSpan timeout, CancellationToken ct)
     {
         if (!IsPaired) return null;
@@ -224,6 +405,8 @@ public class ServerConnection
         {
             using var req = new HttpRequestMessage(HttpMethod.Get, $"{BaseUrl}{path}");
             req.Headers.Authorization = new AuthenticationHeaderValue("Bearer", Token);
+            if (!string.IsNullOrEmpty(AdminSessionToken))
+                req.Headers.Add("X-Admin-Session", AdminSessionToken);
             using var cts = CancellationTokenSource.CreateLinkedTokenSource(ct);
             cts.CancelAfter(timeout);
             using var resp = await Http.SendAsync(req, cts.Token);
@@ -246,6 +429,7 @@ public class ServerConnection
         foreach (var d in record.DocumentFiles)
             AddFile(form, storage.GetPath(record, d), "documents", "image/jpeg");
         AddFile(form, storage.GetPath(record, record.SignatureFile), "signature", "image/png");
+        AddFile(form, storage.GetPath(record, record.QrCodeFile ?? "qrcode.png"), "qrcode", "image/png");
 
         try
         {
@@ -270,5 +454,7 @@ public class ServerConnection
     }
 
     record ServerInfo(string? Product, string? Name, int Version);
-    record PairResponse(string? Token, string? Error);
+    record PairResponse(string? Token, string? Error, bool? IsAdmin);
+    record PingResponse(bool Ok, bool ShowSettings, bool? IsAdmin, bool? ModeLocked, bool? AdminAuthenticated, string? AdminUserName, string? AdminRoleName);
+    record AdminLoginResponse(bool MustResetPin, string? SessionToken, string? DisplayName, string? RoleName, string? Error);
 }

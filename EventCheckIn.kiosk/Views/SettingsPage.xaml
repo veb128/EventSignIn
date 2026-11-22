@@ -6,51 +6,96 @@
              x:Class="EventCheckIn.Views.SettingsPage"
              x:DataType="vm:SettingsViewModel"
              Title="Kiosk Settings">
-    <ScrollView>
-        <VerticalStackLayout Padding="30" Spacing="14" MaximumWidthRequest="640">
+    <Grid>
+        <ScrollView x:Name="PageScroll" VerticalScrollBarVisibility="Always"
+                    Scrolled="OnPageScrolled" SizeChanged="OnScrollSizeChanged">
+            <VerticalStackLayout x:Name="PageContent" Padding="30,24,30,60" Spacing="14" MaximumWidthRequest="640"
+                                 SizeChanged="OnScrollSizeChanged">
 
-            <Label Text="Host connection" FontSize="22" FontAttributes="Bold" />
-            <Border Padding="14" StrokeShape="RoundRectangle 10">
-                <VerticalStackLayout Spacing="6">
-                    <Label Text="{Binding PairedWith}" FontAttributes="Bold" />
-                    <Label Text="{Binding Sync.StatusText}" TextColor="Gray" />
-                    <HorizontalStackLayout Spacing="10">
-                        <Button Text="Sync now" Command="{Binding SyncNowCommand}" IsVisible="{Binding IsPaired}" />
-                        <Button Text="Unpair" Command="{Binding UnpairCommand}" IsVisible="{Binding IsPaired}" BackgroundColor="Gray" />
-                    </HorizontalStackLayout>
-                </VerticalStackLayout>
-            </Border>
+                <Label Text="Host connection" FontSize="22" FontAttributes="Bold" />
+                <Border Padding="14" StrokeShape="RoundRectangle 10">
+                    <VerticalStackLayout Spacing="6">
+                        <Label Text="{Binding PairedWith}" FontAttributes="Bold" />
+                        <Label Text="{Binding Sync.StatusText}" TextColor="Gray" />
+                        <HorizontalStackLayout Spacing="10">
+                            <Button Text="Sync now" Command="{Binding SyncNowCommand}" IsVisible="{Binding IsPaired}" />
+                            <Button Text="Unpair" Command="{Binding UnpairCommand}" IsVisible="{Binding IsPaired}" BackgroundColor="Gray" />
+                        </HorizontalStackLayout>
+                    </VerticalStackLayout>
+                </Border>
 
-            <Label Text="Kiosk name" FontAttributes="Bold" />
-            <Entry Text="{Binding KioskName}" Placeholder="Front desk 1" />
+                <Label Text="Kiosk name" FontAttributes="Bold" />
+                <Entry Text="{Binding KioskName}" Placeholder="Front desk 1" />
 
-            <Label Text="Pair with a host" FontSize="22" FontAttributes="Bold" Margin="0,16,0,0" />
-            <Label Text="1. Join this device to the host's Wi-Fi.  2. Find the host.  3. Enter the PIN shown on the host's dashboard."
-                   TextColor="Gray" />
+                <Label Text="Pair with a host" FontSize="22" FontAttributes="Bold" Margin="0,16,0,0" />
+                <Label Text="1. Join this device to the host's Wi-Fi.  2. Find the host.  3. Enter the PIN shown on the host's dashboard."
+                       TextColor="Gray" />
 
-            <Button Text="🔍 Find hosts on this network" Command="{Binding DiscoverCommand}" />
+                <Button Text="🔍 Find hosts on this network" Command="{Binding DiscoverCommand}" />
 
-            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
-                <Entry Text="{Binding ManualAddress}" Placeholder="…or type address, e.g. 192.168.137.1" Keyboard="Url" />
-                <Button Grid.Column="1" Text="Add" Command="{Binding AddManualCommand}" />
-            </Grid>
+                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
+                    <Entry Text="{Binding ManualAddress}" Placeholder="…or type address, e.g. 192.168.137.1" Keyboard="Url" />
+                    <Button Grid.Column="1" Text="Add" Command="{Binding AddManualCommand}" />
+                </Grid>
 
-            <CollectionView ItemsSource="{Binding Servers}" SelectionMode="Single"
-                            SelectedItem="{Binding SelectedServer}" HeightRequest="120">
-                <CollectionView.ItemTemplate>
-                    <DataTemplate x:DataType="svc:FoundServer">
-                        <Label Text="{Binding Display}" Padding="10" FontSize="16" />
-                    </DataTemplate>
-                </CollectionView.ItemTemplate>
-            </CollectionView>
+                <Border Padding="6" StrokeShape="RoundRectangle 10" IsVisible="{Binding HasServers}">
+                    <CollectionView ItemsSource="{Binding Servers}" SelectionMode="Single"
+                                    SelectedItem="{Binding SelectedServer}" HeightRequest="110">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="svc:FoundServer">
+                                <Border Padding="12,10" Margin="2" StrokeShape="RoundRectangle 8">
+                                    <VisualStateManager.VisualStateGroups>
+                                        <VisualStateGroup Name="CommonStates">
+                                            <VisualState Name="Normal">
+                                                <VisualState.Setters>
+                                                    <Setter Property="BackgroundColor" Value="Transparent" />
+                                                    <Setter Property="Stroke" Value="Transparent" />
+                                                </VisualState.Setters>
+                                            </VisualState>
+                                            <VisualState Name="Selected">
+                                                <VisualState.Setters>
+                                                    <Setter Property="BackgroundColor" Value="#EDE7F6" />
+                                                    <Setter Property="Stroke" Value="{StaticResource Primary}" />
+                                                    <Setter Property="StrokeThickness" Value="2" />
+                                                </VisualState.Setters>
+                                            </VisualState>
+                                        </VisualStateGroup>
+                                    </VisualStateManager.VisualStateGroups>
+                                    <Label Text="{Binding Display}" FontSize="16" FontAttributes="Bold" TextColor="#212121" />
+                                </Border>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </Border>
 
-            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10" IsVisible="{Binding CanPair}">
-                <Entry Text="{Binding Pin}" Placeholder="6-digit PIN" Keyboard="Numeric" MaxLength="6" />
-                <Button Grid.Column="1" Text="Pair" Command="{Binding PairCommand}" />
-            </Grid>
+                <Border x:Name="PairSection" Padding="14" StrokeShape="RoundRectangle 10"
+                        Stroke="{StaticResource Primary}" StrokeThickness="2" IsVisible="{Binding CanPair}">
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="{Binding SelectedServer.Display, StringFormat='Enter 6-digit PIN for {0}:'}"
+                               FontAttributes="Bold" />
+                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
+                            <Entry Text="{Binding Pin}" Placeholder="6-digit PIN" Keyboard="Numeric" MaxLength="6" />
+                            <Button Grid.Column="1" Text="Pair" Command="{Binding PairCommand}" />
+                        </Grid>
+                    </VerticalStackLayout>
+                </Border>
 
-            <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" />
-            <Label Text="{Binding Message}" TextColor="{StaticResource Primary}" />
-        </VerticalStackLayout>
-    </ScrollView>
+                <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" />
+                <Label x:Name="MessageLabel" Text="{Binding Message}" TextColor="{StaticResource Primary}" FontAttributes="Bold" />
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <Border x:Name="ScrollMoreIndicator" IsVisible="False"
+                HorizontalOptions="Center" VerticalOptions="End" Margin="0,0,0,14"
+                Padding="16,8" StrokeShape="RoundRectangle 20"
+                BackgroundColor="{StaticResource Primary}" StrokeThickness="0">
+            <Border.Shadow>
+                <Shadow Brush="Black" Offset="0,3" Radius="8" Opacity="0.35" />
+            </Border.Shadow>
+            <Border.GestureRecognizers>
+                <TapGestureRecognizer Tapped="OnScrollMoreTapped" />
+            </Border.GestureRecognizers>
+            <Label Text="↓ Scroll down for more" TextColor="White" FontAttributes="Bold" FontSize="14" />
+        </Border>
+    </Grid>
 </ContentPage>

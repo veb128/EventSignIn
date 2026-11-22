@@ -1,5 +1,0 @@
----
-triple:          'arm64-apple-darwin'
-binary-path:     '/Users/vancebrown/.gemini/antigravity/scratch/EventCheckIn/bin/Debug/net11.0-ios/ios-arm64/EventCheckIn.app/Frameworks/libSystem.Net.Security.Native.framework/libSystem.Net.Security.Native'
-relocations:     []
-...

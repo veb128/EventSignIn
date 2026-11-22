@@ -20,21 +20,42 @@ public static class Flow
     public static ImageSource? Image(byte[]? b) => b is null ? null : ImageSource.FromStream(() => new MemoryStream(b));
 }
 
-// ---------- Step 1: attendee details (host-configured form) ----------
-public partial class WelcomeViewModel(CheckInSession session, SyncService sync, EventConfigService events) : ObservableObject
+// ---------- Step 1: attendee details (host-configured form) or Admin check-in list ----------
+public partial class WelcomeViewModel(CheckInSession session, SyncService sync, EventConfigService events, ServerConnection server, CheckInStorage storage) : ObservableObject
 {
     public SyncService Sync => sync;
     public ObservableCollection<FieldInput> Fields { get; } = new();
+    public ObservableCollection<CheckInRow> AdminItems { get; } = new();
 
     [ObservableProperty] string eventName = string.Empty;
     [ObservableProperty, NotifyPropertyChangedFor(nameof(HasWelcome))] string welcomeMessage = string.Empty;
+    [ObservableProperty] string startButtonText = "Start Check-In →";
     [ObservableProperty, NotifyPropertyChangedFor(nameof(HasLogo))] ImageSource? logo;
     [ObservableProperty] string fullName = string.Empty;
     [ObservableProperty, NotifyPropertyChangedFor(nameof(HasNameError))] string nameError = string.Empty;
+    [ObservableProperty] string adminSummary = "0 check-in(s)";
+    [ObservableProperty] bool isRefreshingAdmin;
+    [ObservableProperty, NotifyPropertyChangedFor(nameof(HasSelectedCheckIn))] CheckInRow? selectedCheckIn;
+    [ObservableProperty, NotifyPropertyChangedFor(nameof(PrimaryActionText))] bool hasStarted;
+
+    // Admin user authentication & PIN reset
+    [ObservableProperty] string adminUsername = string.Empty;
+    [ObservableProperty] string adminPin = string.Empty;
+    [ObservableProperty] string adminNewPin = string.Empty;
+    [ObservableProperty] string adminConfirmPin = string.Empty;
+    [ObservableProperty, NotifyPropertyChangedFor(nameof(IsAdminStandardLogin))] bool isAdminPinResetRequired;
+    [ObservableProperty, NotifyPropertyChangedFor(nameof(HasAdminAuthError))] string adminAuthError = string.Empty;
+    [ObservableProperty] bool isAdminAuthBusy;
 
     public bool HasLogo => Logo is not null;
     public bool HasWelcome => !string.IsNullOrWhiteSpace(WelcomeMessage);
     public bool HasNameError => !string.IsNullOrEmpty(NameError);
+    public bool HasSelectedCheckIn => SelectedCheckIn is not null;
+    public bool HasAdminAuthError => !string.IsNullOrEmpty(AdminAuthError);
+    public bool IsAdminStandardLogin => !IsAdminPinResetRequired;
+    public string PrimaryActionText => HasStarted ? "Next →" : (string.IsNullOrWhiteSpace(StartButtonText) ? "Start Check-In →" : StartButtonText);
+
+    partial void OnStartButtonTextChanged(string value) => OnPropertyChanged(nameof(PrimaryActionText));
 
     /// <summary>Builds the form from the current event (fresh attendee) or restores it (coming back).</summary>
     public void Load()
@@ -42,13 +63,120 @@ public partial class WelcomeViewModel(CheckInSession session, SyncService sync, 
         var cfg = session.IsFresh || session.Event is null ? events.Current : session.Event;
         EventName = cfg.EventName;
         WelcomeMessage = cfg.WelcomeMessage;
+        StartButtonText = string.IsNullOrWhiteSpace(cfg.StartButtonText) ? "Start Check-In →" : cfg.StartButtonText;
         Logo = events.LogoPath is { } p ? ImageSource.FromFile(p) : null;
+        HasStarted = !session.IsFresh;
 
         FullName = session.IsFresh ? string.Empty : session.FullName;
         NameError = string.Empty;
+        foreach (var old in Fields) old.AnswerChanged -= OnFieldAnswerChanged;
         Fields.Clear();
         foreach (var f in cfg.Fields)
-            Fields.Add(new FieldInput(f, session.IsFresh ? null : session.Answers.FirstOrDefault(a => a.FieldId == f.Id)));
+        {
+            var input = new FieldInput(f, session.IsFresh ? null : session.Answers.FirstOrDefault(a => a.FieldId == f.Id));
+            input.AnswerChanged += OnFieldAnswerChanged;
+            Fields.Add(input);
+        }
+        UpdateFieldVisibility();
+
+        if (sync.IsAdminMode && sync.IsAdminAuthenticated && AdminItems.Count == 0 && !IsRefreshingAdmin)
+            _ = LoadAdminCheckInsAsync();
+    }
+
+    void OnFieldAnswerChanged(object? sender, EventArgs e) => UpdateFieldVisibility();
+
+    bool IsConditionMet(FieldInput f, Dictionary<string, FieldInput> byId, out int depth)
+    {
+        bool active = true;
+        depth = 0;
+        var curr = f;
+        var visited = new HashSet<string> { curr.Def.Id };
+        while (!string.IsNullOrEmpty(curr.Def.ParentFieldId))
+        {
+            if (!byId.TryGetValue(curr.Def.ParentFieldId, out var parent) || !visited.Add(parent.Def.Id))
+            {
+                active = false;
+                break;
+            }
+            depth++;
+            if (parent.Def.Type == FieldTypes.Text ||
+                curr.Def.ShowWhenValues.Count == 0 ||
+                !parent.Values.Any(v => curr.Def.ShowWhenValues.Contains(v)))
+            {
+                active = false;
+            }
+            curr = parent;
+        }
+        return active;
+    }
+
+    void UpdateFieldVisibility()
+    {
+        var byId = Fields.Where(f => !string.IsNullOrEmpty(f.Def.Id)).GroupBy(f => f.Def.Id).ToDictionary(g => g.Key, g => g.First());
+        foreach (var f in Fields)
+        {
+            bool condMet = IsConditionMet(f, byId, out int depth);
+            f.IndentMargin = new Thickness(Math.Min(depth, 4) * 20, 0, 0, 0);
+            f.IsActive = condMet && (HasStarted || f.Def.ShowBeforeStart);
+        }
+    }
+
+    [RelayCommand]
+    public async Task LoadAdminCheckInsAsync()
+    {
+        if (!sync.IsAdminMode || !sync.IsAdminAuthenticated) return;
+        IsRefreshingAdmin = true;
+        try
+        {
+            var list = server.IsPaired ? await server.GetCheckInsAsync() : null;
+            var rows = new List<CheckInRow>();
+            if (list is not null)
+            {
+                var roleName = list.FirstOrDefault()?.AdminRoleName;
+                if (!string.IsNullOrEmpty(roleName)) sync.AdminRoleName = roleName;
+                foreach (var r in list)
+                {
+                    var photoBytes = await server.DownloadCheckInFileAsync(r.Id, r.PhotoFile);
+                    var sigBytes = await server.DownloadCheckInFileAsync(r.Id, r.SignatureFile);
+                    var qrBytes = await server.DownloadCheckInFileAsync(r.Id, r.QrCodeFile ?? "qrcode.png")
+                                  ?? QrCodeHelper.GeneratePng(r.Id);
+                    var docs = new List<DocumentPreview>();
+                    for (int i = 0; i < r.DocumentFiles.Count; i++)
+                    {
+                        var docFile = r.DocumentFiles[i];
+                        var docName = r.DocumentNames.ElementAtOrDefault(i) ?? $"Document {i + 1}";
+                        var access = r.DocumentAccess.ElementAtOrDefault(i) ?? "allowed";
+                        ImageSource? img = null;
+                        if (access == "allowed")
+                        {
+                            var docBytes = await server.DownloadCheckInFileAsync(r.Id, docFile);
+                            img = Flow.Image(docBytes);
+                        }
+                        docs.Add(new DocumentPreview(r.Id, docFile, docName, access, img));
+                    }
+                    rows.Add(new CheckInRow(r, photoBytes, sigBytes, qrBytes, docs));
+                }
+            }
+            else
+            {
+                foreach (var r in await storage.LoadAllAsync())
+                    rows.Add(new CheckInRow(r, storage));
+            }
+
+            MainThread.BeginInvokeOnMainThread(() =>
+            {
+                var prevId = SelectedCheckIn?.Id;
+                AdminItems.Clear();
+                foreach (var row in rows) AdminItems.Add(row);
+                AdminSummary = $"{AdminItems.Count} attendee(s) checked in";
+                if (prevId is not null)
+                    SelectedCheckIn = AdminItems.FirstOrDefault(x => x.Id == prevId);
+            });
+        }
+        finally
+        {
+            MainThread.BeginInvokeOnMainThread(() => IsRefreshingAdmin = false);
+        }
     }
 
     /// <summary>Host published a new event: refresh the form if nobody is mid check-in.</summary>
@@ -65,14 +193,30 @@ public partial class WelcomeViewModel(CheckInSession session, SyncService sync, 
     [RelayCommand]
     async Task Start()
     {
+        UpdateFieldVisibility();
         bool ok = true;
         if (string.IsNullOrWhiteSpace(FullName)) { NameError = "Please enter your full name."; ok = false; }
-        foreach (var f in Fields) ok &= f.Validate();
+        foreach (var f in Fields.Where(f => f.IsActive)) ok &= f.Validate();
         if (!ok) return;
 
+        if (!HasStarted)
+        {
+            var byId = Fields.Where(f => !string.IsNullOrEmpty(f.Def.Id)).GroupBy(f => f.Def.Id).ToDictionary(g => g.Key, g => g.First());
+            bool hasAfterStartFields = Fields.Any(f => !f.Def.ShowBeforeStart &&
+                (IsConditionMet(f, byId, out _) ||
+                 (!string.IsNullOrEmpty(f.Def.ParentFieldId) && byId.TryGetValue(f.Def.ParentFieldId, out var p) && !p.Def.ShowBeforeStart)));
+            if (hasAfterStartFields)
+            {
+                HasStarted = true;
+                UpdateFieldVisibility();
+                return;
+            }
+        }
+
+        var map = Fields.Where(f => !string.IsNullOrEmpty(f.Def.Id)).GroupBy(f => f.Def.Id).ToDictionary(g => g.Key, g => g.First());
         session.Event = session.IsFresh || session.Event is null ? events.Current : session.Event;
         session.FullName = FullName.Trim();
-        session.Answers = Fields.Select(f => f.ToAnswer()).ToList();
+        session.Answers = Fields.Where(f => IsConditionMet(f, map, out _)).Select(f => f.ToAnswer()).ToList();
         session.IsFresh = false;
         await Flow.AfterDetails(session);
     }
@@ -81,7 +225,212 @@ public partial class WelcomeViewModel(CheckInSession session, SyncService sync, 
     Task OpenSettings() => Shell.Current.GoToAsync(nameof(Views.SettingsPage));
 
     [RelayCommand]
-    Task ViewCheckIns() => Shell.Current.GoToAsync(nameof(Views.CheckInListPage));
+    async Task StartInCheckInMode()
+    {
+        IsAdminAuthBusy = true;
+        try
+        {
+            await server.SelectKioskModeAsync(isAdmin: false);
+            sync.IsAdminMode = false;
+            sync.IsModeLocked = true;
+            sync.HasChosenStartupMode = true;
+        }
+        finally
+        {
+            IsAdminAuthBusy = false;
+        }
+    }
+
+    [RelayCommand]
+    async Task StartInAdminMode()
+    {
+        AdminAuthError = string.Empty;
+        IsAdminPinResetRequired = false;
+        server.IsAdminMode = true;
+        sync.IsAdminMode = true;
+        sync.HasChosenStartupMode = true;
+        await server.SelectKioskModeAsync(isAdmin: true);
+    }
+
+    [RelayCommand]
+    void BackToModePrompt()
+    {
+        AdminAuthError = string.Empty;
+        IsAdminPinResetRequired = false;
+        sync.HasChosenStartupMode = false;
+    }
+
+    [RelayCommand]
+    async Task AdminLogin()
+    {
+        AdminAuthError = string.Empty;
+        if (string.IsNullOrWhiteSpace(AdminUsername))
+        {
+            AdminAuthError = "Please enter your admin username.";
+            return;
+        }
+        IsAdminAuthBusy = true;
+        try
+        {
+            var res = await server.AdminLoginAsync(AdminUsername.Trim(), AdminPin.Trim());
+            if (!res.Ok)
+            {
+                AdminAuthError = res.Error ?? "Authentication failed.";
+                return;
+            }
+            if (res.MustResetPin)
+            {
+                IsAdminPinResetRequired = true;
+                AdminNewPin = string.Empty;
+                AdminConfirmPin = string.Empty;
+                AdminAuthError = "A PIN reset is required for your account. Enter a new PIN below.";
+                return;
+            }
+            AdminPin = string.Empty;
+            IsAdminPinResetRequired = false;
+            sync.IsAdminAuthenticated = true;
+            sync.AdminUserName = res.DisplayName;
+            sync.AdminRoleName = res.RoleName;
+            await LoadAdminCheckInsAsync();
+        }
+        finally
+        {
+            IsAdminAuthBusy = false;
+        }
+    }
+
+    [RelayCommand]
+    async Task AdminResetPin()
+    {
+        AdminAuthError = string.Empty;
+        if (string.IsNullOrWhiteSpace(AdminNewPin) || AdminNewPin.Trim().Length < 4)
+        {
+            AdminAuthError = "New PIN must be at least 4 characters.";
+            return;
+        }
+        if (AdminNewPin.Trim() != AdminConfirmPin.Trim())
+        {
+            AdminAuthError = "New PIN and confirmation do not match.";
+            return;
+        }
+        IsAdminAuthBusy = true;
+        try
+        {
+            var res = await server.AdminResetPinAsync(AdminUsername.Trim(), AdminPin.Trim(), AdminNewPin.Trim());
+            if (!res.Ok)
+            {
+                AdminAuthError = res.Error ?? "Could not reset PIN.";
+                return;
+            }
+            AdminPin = string.Empty;
+            AdminNewPin = string.Empty;
+            AdminConfirmPin = string.Empty;
+            IsAdminPinResetRequired = false;
+            sync.IsAdminAuthenticated = true;
+            sync.AdminUserName = res.DisplayName;
+            sync.AdminRoleName = res.RoleName;
+            await LoadAdminCheckInsAsync();
+        }
+        finally
+        {
+            IsAdminAuthBusy = false;
+        }
+    }
+
+    [RelayCommand]
+    void CancelAdminPinReset()
+    {
+        IsAdminPinResetRequired = false;
+        AdminNewPin = string.Empty;
+        AdminConfirmPin = string.Empty;
+        AdminAuthError = string.Empty;
+    }
+
+    [RelayCommand]
+    async Task AdminLogout()
+    {
+        SelectedCheckIn?.LockAllPinProtectedDocuments();
+        SelectedCheckIn = null;
+        AdminItems.Clear();
+        AdminPin = string.Empty;
+        IsAdminPinResetRequired = false;
+        AdminAuthError = string.Empty;
+        await server.AdminLogoutAsync();
+        sync.IsAdminAuthenticated = false;
+        sync.AdminUserName = string.Empty;
+        sync.AdminRoleName = string.Empty;
+        sync.HasChosenStartupMode = false;
+    }
+
+    [RelayCommand]
+    void SelectCheckIn(CheckInRow? row)
+    {
+        SelectedCheckIn?.LockAllPinProtectedDocuments();
+        SelectedCheckIn = row;
+    }
+
+    [RelayCommand]
+    void ClearSelectedCheckIn()
+    {
+        SelectedCheckIn?.LockAllPinProtectedDocuments();
+        SelectedCheckIn = null;
+    }
+
+    [RelayCommand]
+    async Task UnlockDocument(DocumentPreview? doc)
+    {
+        if (doc is null || !doc.IsLocked) return;
+        var pin = await Shell.Current.DisplayPromptAsync(
+            "PIN Required",
+            $"Enter the PIN/password for your admin role to view \"{doc.Name}\":",
+            accept: "Unlock",
+            cancel: "Cancel",
+            placeholder: "PIN / password",
+            maxLength: 40,
+            keyboard: Keyboard.Text);
+        if (string.IsNullOrWhiteSpace(pin)) return;
+
+        doc.IsUnlocking = true;
+        try
+        {
+            var (bytes, error) = await server.DownloadProtectedDocumentAsync(doc.CheckInId, doc.FileName, pin.Trim());
+            if (bytes is not null)
+            {
+                doc.SetUnlockedImage(Flow.Image(bytes));
+            }
+            else
+            {
+                await Shell.Current.DisplayAlertAsync("Access denied", error ?? "Incorrect PIN.", "OK");
+            }
+        }
+        finally
+        {
+            doc.IsUnlocking = false;
+        }
+    }
+
+    [RelayCommand]
+    void LockDocument(DocumentPreview? doc) => doc?.Lock();
+
+    [RelayCommand]
+    Task ScanQrCode() => Shell.Current.GoToAsync(nameof(Views.QrScannerPage));
+
+    public async Task<bool> ShowAttendeeByIdAsync(string checkInId)
+    {
+        var match = AdminItems.FirstOrDefault(x => string.Equals(x.Id, checkInId, StringComparison.OrdinalIgnoreCase));
+        if (match is null)
+        {
+            await LoadAdminCheckInsAsync();
+            match = AdminItems.FirstOrDefault(x => string.Equals(x.Id, checkInId, StringComparison.OrdinalIgnoreCase));
+        }
+        if (match is not null)
+        {
+            SelectedCheckIn?.LockAllPinProtectedDocuments();
+            SelectedCheckIn = match;
+            return true;
+        }
+        return false;
+    }
 }
 
 // ---------- Step 2: attendee photo ----------
@@ -259,9 +608,11 @@ public partial class CompleteViewModel(CheckInSession session, CheckInStorage st
 {
     [ObservableProperty] string message = string.Empty;
     [ObservableProperty] ImageSource? photo;
+    [ObservableProperty] ImageSource? qrCode;
     [ObservableProperty, NotifyPropertyChangedFor(nameof(HasLogo))] ImageSource? logo;
     public bool HasLogo => Logo is not null;
     public bool HasPhoto => Photo is not null;
+    public bool HasQrCode => QrCode is not null;
 
     public void Load()
     {
@@ -271,7 +622,10 @@ public partial class CompleteViewModel(CheckInSession session, CheckInStorage st
         Message = $"Welcome, {r.FullName}!\nYou're checked in to {r.EventName} at {r.CheckedInAt:t}.";
         var p = storage.GetPath(r, r.PhotoFile);
         Photo = p is null ? null : ImageSource.FromFile(p);
+        var q = storage.GetPath(r, r.QrCodeFile ?? "qrcode.png");
+        QrCode = q is not null && File.Exists(q) ? ImageSource.FromFile(q) : Flow.Image(QrCodeHelper.GeneratePng(r.Id));
         OnPropertyChanged(nameof(HasPhoto));
+        OnPropertyChanged(nameof(HasQrCode));
     }
 
     [RelayCommand]
@@ -294,10 +648,109 @@ public partial class CheckInListViewModel(CheckInStorage storage) : ObservableOb
     }
 }
 
-public class CheckInRow(CheckInRecord r, CheckInStorage storage)
+public partial class DocumentPreview : ObservableObject
 {
-    public string Name => r.FullName;
-    public string Details => $"{r.EventName} • {r.CheckedInAt:g} • {r.DocumentFiles.Count} doc(s) • {(r.Synced ? "✅ synced" : "⏳ waiting to sync")}";
-    public ImageSource? Photo => storage.GetPath(r, r.PhotoFile) is { } p ? ImageSource.FromFile(p) : null;
-    public ImageSource? Signature => storage.GetPath(r, r.SignatureFile) is { } p ? ImageSource.FromFile(p) : null;
+    public string CheckInId { get; }
+    public string FileName { get; }
+    public string Name { get; }
+    public string Access { get; }
+
+    [ObservableProperty, NotifyPropertyChangedFor(nameof(IsUnlocked), nameof(IsLocked), nameof(CanRelock), nameof(StatusText))]
+    ImageSource? image;
+
+    [ObservableProperty] bool isUnlocking;
+
+    public DocumentPreview(string checkInId, string fileName, string name, string access, ImageSource? image)
+    {
+        CheckInId = checkInId;
+        FileName = fileName;
+        Name = name;
+        Access = access;
+        Image = image;
+    }
+
+    public bool IsRestricted => Access == "restricted";
+    public bool RequiresPin => Access == "pin_required";
+    public bool IsLocked => RequiresPin && Image is null;
+    public bool IsUnlocked => !IsRestricted && Image is not null;
+    public bool CanRelock => RequiresPin && Image is not null;
+
+    public string StatusText => IsRestricted ? "✓ Scanned (Restricted)"
+                              : IsLocked ? "✓ Scanned — PIN required"
+                              : "✓ Scanned";
+
+    public void SetUnlockedImage(ImageSource? img) => Image = img;
+
+    public void Lock()
+    {
+        if (RequiresPin) Image = null;
+    }
+}
+
+public class CheckInRow
+{
+    readonly CheckInRecord _r;
+    public CheckInRow(CheckInRecord r, CheckInStorage storage)
+    {
+        _r = r;
+        Photo = storage.GetPath(r, r.PhotoFile) is { } p && File.Exists(p) ? ImageSource.FromFile(p) : null;
+        Signature = storage.GetPath(r, r.SignatureFile) is { } s && File.Exists(s) ? ImageSource.FromFile(s) : null;
+        var q = storage.GetPath(r, r.QrCodeFile ?? "qrcode.png");
+        QrCode = q is not null && File.Exists(q) ? ImageSource.FromFile(q) : Flow.Image(QrCodeHelper.GeneratePng(r.Id));
+        var docs = new List<DocumentPreview>();
+        for (int i = 0; i < r.DocumentFiles.Count; i++)
+        {
+            var dp = storage.GetPath(r, r.DocumentFiles[i]);
+            var dn = r.DocumentNames.ElementAtOrDefault(i) ?? $"Document {i + 1}";
+            if (dp is not null && File.Exists(dp))
+                docs.Add(new DocumentPreview(r.Id, r.DocumentFiles[i], dn, "allowed", ImageSource.FromFile(dp)));
+        }
+        Documents = docs;
+    }
+
+    public CheckInRow(CheckInRecord r, byte[]? photoBytes, byte[]? sigBytes, byte[]? qrBytes = null, List<DocumentPreview>? docs = null)
+    {
+        _r = r;
+        Photo = Flow.Image(photoBytes);
+        Signature = Flow.Image(sigBytes);
+        QrCode = Flow.Image(qrBytes ?? QrCodeHelper.GeneratePng(r.Id));
+        Documents = docs ?? new();
+    }
+
+    public void LockAllPinProtectedDocuments()
+    {
+        foreach (var d in Documents) d.Lock();
+    }
+
+    public string Id => _r.Id;
+    public string Name => _r.FullName;
+    public string EventName => _r.EventName;
+    public string CheckedInTime => _r.CheckedInAt.ToString("f");
+    public string KioskDisplay => string.IsNullOrWhiteSpace(_r.KioskName) ? "Local kiosk" : _r.KioskName;
+    public string Details
+    {
+        get
+        {
+            var parts = new List<string> { _r.EventName, _r.CheckedInAt.ToString("g") };
+            if (!string.IsNullOrWhiteSpace(_r.KioskName)) parts.Add(_r.KioskName);
+            parts.Add($"{_r.DocumentFiles.Count} doc(s)");
+            return string.Join(" • ", parts.Where(p => !string.IsNullOrWhiteSpace(p)));
+        }
+    }
+    public string AnswersSummary =>
+        _r.Answers is { Count: > 0 }
+            ? string.Join("  |  ", _r.Answers.Where(a => a.Values.Count > 0).Select(a => $"{a.Label}: {string.Join(", ", a.Values)}"))
+            : _r.Email;
+    public string AnswersMultiline =>
+        _r.Answers is { Count: > 0 }
+            ? string.Join("\n", _r.Answers.Where(a => a.Values.Count > 0).Select(a => $"• {a.Label}: {string.Join(", ", a.Values)}"))
+            : (!string.IsNullOrWhiteSpace(_r.Email) ? $"• Email: {_r.Email}" : "No additional responses.");
+    public bool HasAnswers => !string.IsNullOrWhiteSpace(AnswersSummary);
+    public bool HasPhoto => Photo is not null;
+    public bool HasSignature => Signature is not null;
+    public bool HasDocuments => Documents.Count > 0;
+    public ImageSource? Photo { get; }
+    public ImageSource? Signature { get; }
+    public ImageSource? QrCode { get; }
+    public List<DocumentPreview> Documents { get; }
 }

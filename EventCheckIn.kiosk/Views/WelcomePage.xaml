@@ -4,6 +4,7 @@
              xmlns:vm="clr-namespace:EventCheckIn.ViewModels"
              x:Class="EventCheckIn.Views.WelcomePage"
              x:DataType="vm:WelcomeViewModel"
+             x:Name="Page"
              Title="{Binding EventName}">
 
     <ContentPage.Resources>
@@ -19,7 +20,7 @@
             <!-- Free text -->
             <vm:FieldTemplateSelector.TextTemplate>
                 <DataTemplate x:DataType="vm:FieldInput">
-                    <VerticalStackLayout Spacing="4">
+                    <VerticalStackLayout Spacing="4" IsVisible="{Binding IsActive}" Margin="{Binding IndentMargin}">
                         <Label Text="{Binding Label}" Style="{StaticResource FieldLabel}" />
                         <Entry Text="{Binding Text}" Placeholder="{Binding Placeholder}"
                                Keyboard="{Binding Keyboard}" MaxLength="{Binding MaxLength}" />
@@ -31,7 +32,8 @@
             <!-- Single choice -->
             <vm:FieldTemplateSelector.RadioTemplate>
                 <DataTemplate x:DataType="vm:FieldInput">
-                    <VerticalStackLayout Spacing="2" RadioButtonGroup.GroupName="{Binding Def.Id}">
+                    <VerticalStackLayout Spacing="2" RadioButtonGroup.GroupName="{Binding Def.Id}"
+                                         IsVisible="{Binding IsActive}" Margin="{Binding IndentMargin}">
                         <Label Text="{Binding Label}" Style="{StaticResource FieldLabel}" />
                         <FlexLayout Wrap="Wrap" BindableLayout.ItemsSource="{Binding Options}">
                             <BindableLayout.ItemTemplate>
@@ -48,7 +50,7 @@
             <!-- Multiple choice -->
             <vm:FieldTemplateSelector.CheckboxTemplate>
                 <DataTemplate x:DataType="vm:FieldInput">
-                    <VerticalStackLayout Spacing="2">
+                    <VerticalStackLayout Spacing="2" IsVisible="{Binding IsActive}" Margin="{Binding IndentMargin}">
                         <Label Text="{Binding Label}" Style="{StaticResource FieldLabel}" />
                         <FlexLayout Wrap="Wrap" BindableLayout.ItemsSource="{Binding Options}">
                             <BindableLayout.ItemTemplate>
@@ -72,7 +74,7 @@
             <!-- Dropdown -->
             <vm:FieldTemplateSelector.DropdownTemplate>
                 <DataTemplate x:DataType="vm:FieldInput">
-                    <VerticalStackLayout Spacing="4">
+                    <VerticalStackLayout Spacing="4" IsVisible="{Binding IsActive}" Margin="{Binding IndentMargin}">
                         <Label Text="{Binding Label}" Style="{StaticResource FieldLabel}" />
                         <Picker ItemsSource="{Binding OptionValues}" SelectedItem="{Binding SelectedOption}" Title="Select…" />
                         <Label Text="{Binding Error}" IsVisible="{Binding HasError}" Style="{StaticResource ErrorLabel}" />
@@ -82,33 +84,238 @@
         </vm:FieldTemplateSelector>
     </ContentPage.Resources>
 
-    <ScrollView>
-        <VerticalStackLayout Padding="30" Spacing="16" MaximumWidthRequest="640">
-            <Image Source="{Binding Logo}" IsVisible="{Binding HasLogo}" HeightRequest="110" Aspect="AspectFit" />
-            <Label Text="{Binding EventName}" FontSize="32" FontAttributes="Bold" HorizontalOptions="Center"
-                   HorizontalTextAlignment="Center" />
-            <Label Text="{Binding WelcomeMessage}" IsVisible="{Binding HasWelcome}" FontSize="17"
-                   HorizontalOptions="Center" HorizontalTextAlignment="Center" />
+    <Grid>
+        <ScrollView x:Name="PageScroll" VerticalScrollBarVisibility="Always"
+                    Scrolled="OnPageScrolled" SizeChanged="OnScrollSizeChanged">
+            <VerticalStackLayout x:Name="PageContent" Padding="30,30,30,64" Spacing="16" MaximumWidthRequest="640"
+                                 SizeChanged="OnScrollSizeChanged">
+                <Image Source="{Binding Logo}" IsVisible="{Binding HasLogo}" HeightRequest="110" Aspect="AspectFit" />
+                <Label Text="{Binding EventName}" FontSize="32" FontAttributes="Bold" HorizontalOptions="Center"
+                       HorizontalTextAlignment="Center" />
 
-            <VerticalStackLayout Spacing="4">
-                <Label Text="Full name *" Style="{StaticResource FieldLabel}" />
-                <Entry Text="{Binding FullName}" Placeholder="Jane Doe" />
-                <Label Text="{Binding NameError}" IsVisible="{Binding HasNameError}" Style="{StaticResource ErrorLabel}" />
+                <!-- Startup Mode Selection Prompt (shown on launch until locked into Attendee Check-In mode) -->
+                <Border Padding="28" StrokeShape="RoundRectangle 14" Stroke="{StaticResource Primary}" StrokeThickness="2"
+                        BackgroundColor="#FAF8FF" IsVisible="{Binding Sync.IsModePromptVisible}">
+                    <VerticalStackLayout Spacing="18" MaximumWidthRequest="480" HorizontalOptions="Center">
+                        <Label Text="Select Kiosk Mode" FontSize="26" FontAttributes="Bold" TextColor="{StaticResource Primary}"
+                               HorizontalOptions="Center" />
+                        <Label Text="Choose how this tablet will be used. Once started in Attendee Check-In mode, this tablet stays locked in check-in mode until changed in the host app."
+                               FontSize="14" TextColor="Gray" HorizontalTextAlignment="Center" />
+
+                        <Button Text="📋 Attendee Check-In Mode" Command="{Binding StartInCheckInModeCommand}"
+                                FontSize="19" Padding="18,14" />
+
+                        <Button Text="🔐 Admin Mode (Requires Sign-In)" Command="{Binding StartInAdminModeCommand}"
+                                FontSize="18" Padding="18,14" BackgroundColor="#374151" />
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Check-in UI (shown only when in Attendee Check-In mode) -->
+                <VerticalStackLayout Spacing="16" IsVisible="{Binding Sync.IsKioskMode}">
+                    <Label Text="{Binding WelcomeMessage}" IsVisible="{Binding HasWelcome}" FontSize="17"
+                           HorizontalOptions="Center" HorizontalTextAlignment="Center" />
+
+                    <VerticalStackLayout Spacing="4">
+                        <Label Text="Full name *" Style="{StaticResource FieldLabel}" />
+                        <Entry Text="{Binding FullName}" Placeholder="Jane Doe" />
+                        <Label Text="{Binding NameError}" IsVisible="{Binding HasNameError}" Style="{StaticResource ErrorLabel}" />
+                    </VerticalStackLayout>
+
+                    <VerticalStackLayout Spacing="16" BindableLayout.ItemsSource="{Binding Fields}"
+                                         BindableLayout.ItemTemplateSelector="{StaticResource FieldSelector}" />
+
+                    <Button Text="{Binding PrimaryActionText}" Command="{Binding StartCommand}" FontSize="20" Margin="0,16,0,0" />
+                </VerticalStackLayout>
+
+                <!-- Admin Mode UI (shows Admin Sign-In / PIN Reset when unauthenticated, or checked-in attendees list when authenticated) -->
+                <VerticalStackLayout Spacing="12" IsVisible="{Binding Sync.IsAdminModeVisible}">
+
+                    <!-- Admin User Login & PIN Reset Card -->
+                    <Border Padding="24" StrokeShape="RoundRectangle 12" Stroke="{StaticResource Primary}" StrokeThickness="2"
+                            BackgroundColor="#FAF8FF" IsVisible="{Binding Sync.IsAdminLoginVisible}">
+                        <VerticalStackLayout Spacing="14" MaximumWidthRequest="440" HorizontalOptions="Center">
+                            <Label Text="🔐 Admin Sign-In" FontSize="24" FontAttributes="Bold" TextColor="{StaticResource Primary}" HorizontalOptions="Center" />
+                            <Label Text="Sign in with your admin username and PIN configured on the host server."
+                                   FontSize="14" TextColor="Gray" HorizontalTextAlignment="Center" />
+
+                            <VerticalStackLayout Spacing="4">
+                                <Label Text="Username" Style="{StaticResource FieldLabel}" />
+                                <Entry Text="{Binding AdminUsername}" Placeholder="e.g. jsmith" IsReadOnly="{Binding IsAdminPinResetRequired}" />
+                            </VerticalStackLayout>
+
+                            <VerticalStackLayout Spacing="4" IsVisible="{Binding IsAdminStandardLogin}">
+                                <Label Text="PIN / Password (leave blank if setting initial PIN)" Style="{StaticResource FieldLabel}" />
+                                <Entry Text="{Binding AdminPin}" Placeholder="PIN / password" IsPassword="True" />
+                            </VerticalStackLayout>
+
+                            <VerticalStackLayout Spacing="10" IsVisible="{Binding IsAdminPinResetRequired}">
+                                <VerticalStackLayout Spacing="4">
+                                    <Label Text="New PIN / Password (min 4 characters) *" Style="{StaticResource FieldLabel}" />
+                                    <Entry Text="{Binding AdminNewPin}" Placeholder="Enter new PIN" IsPassword="True" />
+                                </VerticalStackLayout>
+                                <VerticalStackLayout Spacing="4">
+                                    <Label Text="Confirm New PIN / Password *" Style="{StaticResource FieldLabel}" />
+                                    <Entry Text="{Binding AdminConfirmPin}" Placeholder="Confirm new PIN" IsPassword="True" />
+                                </VerticalStackLayout>
+                            </VerticalStackLayout>
+
+                            <Label Text="{Binding AdminAuthError}" IsVisible="{Binding HasAdminAuthError}" Style="{StaticResource ErrorLabel}" />
+                            <ActivityIndicator IsRunning="{Binding IsAdminAuthBusy}" IsVisible="{Binding IsAdminAuthBusy}" />
+
+                            <Button Text="Sign In →" Command="{Binding AdminLoginCommand}" IsVisible="{Binding IsAdminStandardLogin}" FontSize="18" />
+                            <Button Text="← Back to Mode Selection" Command="{Binding BackToModePromptCommand}"
+                                    IsVisible="{Binding IsAdminStandardLogin}" BackgroundColor="Gray" />
+
+                            <HorizontalStackLayout Spacing="10" HorizontalOptions="Center" IsVisible="{Binding IsAdminPinResetRequired}">
+                                <Button Text="Set New PIN &amp; Sign In" Command="{Binding AdminResetPinCommand}" />
+                                <Button Text="Cancel" Command="{Binding CancelAdminPinResetCommand}" BackgroundColor="Gray" />
+                            </HorizontalStackLayout>
+                        </VerticalStackLayout>
+                    </Border>
+
+                    <!-- Authenticated Admin Content -->
+                    <VerticalStackLayout Spacing="12" IsVisible="{Binding Sync.IsAdminAuthenticated}">
+                        <Border Padding="12,10" StrokeShape="RoundRectangle 8" BackgroundColor="#EDE7F6" Stroke="{StaticResource Primary}">
+                            <Grid ColumnDefinitions="*,Auto,Auto,Auto" ColumnSpacing="8">
+                                <VerticalStackLayout VerticalOptions="Center">
+                                    <Label Text="{Binding Sync.AdminHeaderText}" FontAttributes="Bold" TextColor="{StaticResource Primary}" FontSize="15" />
+                                    <Label Text="{Binding AdminSummary}" FontSize="18" FontAttributes="Bold" />
+                                </VerticalStackLayout>
+                                <Button Grid.Column="1" Text="📷 Scan QR Code" Command="{Binding ScanQrCodeCommand}" VerticalOptions="Center" />
+                                <Button Grid.Column="2" Text="↻ Refresh" Command="{Binding LoadAdminCheckInsCommand}" BackgroundColor="Gray" VerticalOptions="Center" />
+                                <Button Grid.Column="3" Text="Sign Out" Command="{Binding AdminLogoutCommand}" BackgroundColor="#C62828" VerticalOptions="Center" />
+                            </Grid>
+                        </Border>
+
+                    <!-- Scanned / Selected Attendee Information Card -->
+                    <Border x:Name="AttendeeDetailCard" Padding="18" StrokeShape="RoundRectangle 12"
+                            Stroke="{StaticResource Primary}" StrokeThickness="3" BackgroundColor="#FAF8FF"
+                            IsVisible="{Binding HasSelectedCheckIn}">
+                        <VerticalStackLayout Spacing="14">
+                            <Grid ColumnDefinitions="*,Auto">
+                                <Label Text="Registered Attendee Details" FontSize="18" FontAttributes="Bold" TextColor="{StaticResource Primary}" VerticalOptions="Center" />
+                                <Button Grid.Column="1" Text="✕ Close" Command="{Binding ClearSelectedCheckInCommand}" BackgroundColor="Gray" Padding="12,6" />
+                            </Grid>
+
+                            <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="16">
+                                <Border StrokeShape="Ellipse" WidthRequest="110" HeightRequest="110" VerticalOptions="Center"
+                                        IsVisible="{Binding SelectedCheckIn.HasPhoto}">
+                                    <Image Source="{Binding SelectedCheckIn.Photo}" Aspect="AspectFill" />
+                                </Border>
+                                <VerticalStackLayout Grid.Column="1" Spacing="4" VerticalOptions="Center">
+                                    <Label Text="{Binding SelectedCheckIn.Name}" FontSize="24" FontAttributes="Bold" />
+                                    <Label Text="{Binding SelectedCheckIn.EventName, StringFormat='Event: {0}'}" FontSize="15" />
+                                    <Label Text="{Binding SelectedCheckIn.CheckedInTime, StringFormat='Checked in: {0}'}" FontSize="14" TextColor="Gray" />
+                                    <Label Text="{Binding SelectedCheckIn.KioskDisplay, StringFormat='Kiosk: {0}'}" FontSize="14" TextColor="Gray" />
+                                </VerticalStackLayout>
+                                <Border Grid.Column="2" Padding="6" StrokeShape="RoundRectangle 8" BackgroundColor="White" VerticalOptions="Center">
+                                    <Image Source="{Binding SelectedCheckIn.QrCode}" WidthRequest="96" HeightRequest="96" Aspect="AspectFit" />
+                                </Border>
+                            </Grid>
+
+                            <VerticalStackLayout Spacing="4">
+                                <Label Text="Responses" FontAttributes="Bold" FontSize="15" />
+                                <Label Text="{Binding SelectedCheckIn.AnswersMultiline}" FontSize="15" LineBreakMode="WordWrap" />
+                            </VerticalStackLayout>
+
+                            <VerticalStackLayout Spacing="6" IsVisible="{Binding SelectedCheckIn.HasDocuments}">
+                                <Label Text="Scanned Documents" FontAttributes="Bold" FontSize="15" />
+                                <FlexLayout Wrap="Wrap" BindableLayout.ItemsSource="{Binding SelectedCheckIn.Documents}">
+                                    <BindableLayout.ItemTemplate>
+                                        <DataTemplate x:DataType="vm:DocumentPreview">
+                                            <Border Padding="10" Margin="0,0,10,10" StrokeShape="RoundRectangle 8" BackgroundColor="White">
+                                                <VerticalStackLayout Spacing="6" WidthRequest="175">
+                                                    <!-- Unlocked / Allowed Image -->
+                                                    <Image Source="{Binding Image}" IsVisible="{Binding IsUnlocked}" HeightRequest="115" Aspect="AspectFit" />
+
+                                                    <!-- Locked (Requires Role PIN) -->
+                                                    <VerticalStackLayout Spacing="6" IsVisible="{Binding IsLocked}" Padding="0,8">
+                                                        <Label Text="🔒" FontSize="28" HorizontalOptions="Center" />
+                                                        <Button Text="🔓 Unlock with PIN"
+                                                                Command="{Binding Source={x:Reference Page}, Path=BindingContext.UnlockDocumentCommand, x:DataType=ContentPage}"
+                                                                CommandParameter="{Binding .}"
+                                                                FontSize="12" Padding="8,6" />
+                                                        <ActivityIndicator IsRunning="{Binding IsUnlocking}" IsVisible="{Binding IsUnlocking}" HeightRequest="24" />
+                                                    </VerticalStackLayout>
+
+                                                    <!-- Restricted (Not permitted for this tablet's Admin Role) -->
+                                                    <VerticalStackLayout Spacing="4" IsVisible="{Binding IsRestricted}" Padding="0,14">
+                                                        <Label Text="🚫" FontSize="28" HorizontalOptions="Center" />
+                                                    </VerticalStackLayout>
+
+                                                    <Label Text="{Binding Name}" FontSize="13" FontAttributes="Bold" HorizontalTextAlignment="Center" />
+                                                    <Label Text="{Binding StatusText}" FontSize="11" TextColor="Gray" HorizontalTextAlignment="Center" />
+
+                                                    <Button Text="🔒 Lock" IsVisible="{Binding CanRelock}"
+                                                            Command="{Binding Source={x:Reference Page}, Path=BindingContext.LockDocumentCommand, x:DataType=ContentPage}"
+                                                            CommandParameter="{Binding .}"
+                                                            BackgroundColor="Gray" FontSize="11" Padding="8,4" HorizontalOptions="Center" />
+                                                </VerticalStackLayout>
+                                            </Border>
+                                        </DataTemplate>
+                                    </BindableLayout.ItemTemplate>
+                                </FlexLayout>
+                            </VerticalStackLayout>
+
+                            <VerticalStackLayout Spacing="4" IsVisible="{Binding SelectedCheckIn.HasSignature}">
+                                <Label Text="Signature" FontAttributes="Bold" FontSize="15" />
+                                <Border Padding="8" StrokeShape="RoundRectangle 8" BackgroundColor="White" HorizontalOptions="Start">
+                                    <Image Source="{Binding SelectedCheckIn.Signature}" HeightRequest="70" WidthRequest="240" Aspect="AspectFit" />
+                                </Border>
+                            </VerticalStackLayout>
+                        </VerticalStackLayout>
+                    </Border>
+
+                    <ActivityIndicator IsRunning="{Binding IsRefreshingAdmin}" IsVisible="{Binding IsRefreshingAdmin}" />
+
+                    <CollectionView ItemsSource="{Binding AdminItems}" EmptyView="No attendees checked in yet.">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="vm:CheckInRow">
+                                <Border Padding="12" Margin="0,4" StrokeShape="RoundRectangle 10">
+                                    <Border.GestureRecognizers>
+                                        <TapGestureRecognizer Command="{Binding Source={x:Reference Page}, Path=BindingContext.SelectCheckInCommand, x:DataType=ContentPage}"
+                                                              CommandParameter="{Binding .}" />
+                                    </Border.GestureRecognizers>
+                                    <Grid ColumnDefinitions="64,*,100,64" ColumnSpacing="12">
+                                        <Border StrokeShape="Ellipse" WidthRequest="60" HeightRequest="60" VerticalOptions="Center">
+                                            <Image Source="{Binding Photo}" Aspect="AspectFill" />
+                                        </Border>
+                                        <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="2">
+                                            <Label Text="{Binding Name}" FontAttributes="Bold" FontSize="17" />
+                                            <Label Text="{Binding Details}" TextColor="Gray" FontSize="13" />
+                                            <Label Text="{Binding AnswersSummary}" IsVisible="{Binding HasAnswers}" TextColor="#444" FontSize="13" LineBreakMode="WordWrap" />
+                                        </VerticalStackLayout>
+                                        <Image Grid.Column="2" Source="{Binding Signature}" HeightRequest="48" BackgroundColor="White" VerticalOptions="Center" />
+                                        <Image Grid.Column="3" Source="{Binding QrCode}" WidthRequest="56" HeightRequest="56" BackgroundColor="White" VerticalOptions="Center" />
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                    </VerticalStackLayout>
+                </VerticalStackLayout>
+
+                <Border Padding="12" StrokeShape="RoundRectangle 10" Margin="0,10,0,0"
+                        IsVisible="{Binding Sync.ShowSettings}">
+                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
+                        <Label Text="{Binding Sync.StatusText}" VerticalOptions="Center" FontSize="13" TextColor="Gray" />
+                        <Button Grid.Column="1" Text="⚙ Kiosk settings" Command="{Binding OpenSettingsCommand}" FontSize="13" />
+                    </Grid>
+                </Border>
             </VerticalStackLayout>
+        </ScrollView>
 
-            <VerticalStackLayout Spacing="16" BindableLayout.ItemsSource="{Binding Fields}"
-                                 BindableLayout.ItemTemplateSelector="{StaticResource FieldSelector}" />
-
-            <Button Text="Start Check-In →" Command="{Binding StartCommand}" FontSize="20" Margin="0,16,0,0" />
-            <Button Text="View check-ins" Command="{Binding ViewCheckInsCommand}"
-                    BackgroundColor="Transparent" TextColor="{StaticResource Primary}" />
-
-            <Border Padding="12" StrokeShape="RoundRectangle 10" Margin="0,10,0,0">
-                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
-                    <Label Text="{Binding Sync.StatusText}" VerticalOptions="Center" FontSize="13" TextColor="Gray" />
-                    <Button Grid.Column="1" Text="⚙ Kiosk settings" Command="{Binding OpenSettingsCommand}" FontSize="13" />
-                </Grid>
-            </Border>
-        </VerticalStackLayout>
-    </ScrollView>
+        <Border x:Name="ScrollMoreIndicator" IsVisible="False"
+                HorizontalOptions="Center" VerticalOptions="End" Margin="0,0,0,14"
+                Padding="16,8" StrokeShape="RoundRectangle 20"
+                BackgroundColor="{StaticResource Primary}" StrokeThickness="0">
+            <Border.Shadow>
+                <Shadow Brush="Black" Offset="0,3" Radius="8" Opacity="0.35" />
+            </Border.Shadow>
+            <Border.GestureRecognizers>
+                <TapGestureRecognizer Tapped="OnScrollMoreTapped" />
+            </Border.GestureRecognizers>
+            <Label Text="↓ Scroll down for more" TextColor="White" FontAttributes="Bold" FontSize="14" />
+        </Border>
+    </Grid>
 </ContentPage>

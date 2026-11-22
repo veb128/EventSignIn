@@ -7,6 +7,7 @@ public class EventConfig
     public int Version { get; set; }
     public string EventName { get; set; } = "Event Check-In";
     public string WelcomeMessage { get; set; } = "Welcome! Please check in.";
+    public string StartButtonText { get; set; } = "Start Check-In →";
     public bool HasLogo { get; set; }
     public bool CollectPhoto { get; set; } = true;
     public string TermsText { get; set; } =
@@ -43,9 +44,12 @@ public class FieldDef
     public string Label { get; set; } = "";
     public string Type { get; set; } = FieldTypes.Text;
     public bool Required { get; set; }
+    public bool ShowBeforeStart { get; set; } = true;
     public string Placeholder { get; set; } = "";
     public List<string> Options { get; set; } = new();
     public ValidationDef Validation { get; set; } = new();
+    public string ParentFieldId { get; set; } = "";
+    public List<string> ShowWhenValues { get; set; } = new();
 }
 
 public class ValidationDef
@@ -65,6 +69,7 @@ public class DocumentDef
     public string Name { get; set; } = "";
     public string Instructions { get; set; } = "";
     public bool Required { get; set; } = true;
+    public bool RequirePinToView { get; set; }
 }
 
 public class FieldAnswer

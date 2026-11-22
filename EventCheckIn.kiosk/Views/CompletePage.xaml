@@ -6,14 +6,24 @@
              x:DataType="vm:CompleteViewModel"
              Shell.BackButtonBehavior="{BackButtonBehavior IsVisible=False}"
              Title="Checked In">
-    <VerticalStackLayout Padding="30" Spacing="20" VerticalOptions="Center">
-        <Image Source="{Binding Logo}" IsVisible="{Binding HasLogo}" HeightRequest="90" Aspect="AspectFit" />
-        <Label Text="✅" FontSize="72" HorizontalOptions="Center" />
-        <Border StrokeShape="Ellipse" WidthRequest="180" HeightRequest="180" HorizontalOptions="Center" IsVisible="{Binding HasPhoto}">
-            <Image Source="{Binding Photo}" Aspect="AspectFill" />
-        </Border>
-        <Label Text="{Binding Message}" FontSize="24" HorizontalTextAlignment="Center" />
-        <Button Text="Next Attendee" Command="{Binding NextAttendeeCommand}" FontSize="20"
-                HorizontalOptions="Center" WidthRequest="240" />
-    </VerticalStackLayout>
+    <ScrollView>
+        <VerticalStackLayout Padding="30" Spacing="16" VerticalOptions="Center">
+            <Image Source="{Binding Logo}" IsVisible="{Binding HasLogo}" HeightRequest="80" Aspect="AspectFit" />
+            <Label Text="✅" FontSize="56" HorizontalOptions="Center" />
+            <HorizontalStackLayout Spacing="24" HorizontalOptions="Center">
+                <Border StrokeShape="Ellipse" WidthRequest="150" HeightRequest="150" VerticalOptions="Center" IsVisible="{Binding HasPhoto}">
+                    <Image Source="{Binding Photo}" Aspect="AspectFill" />
+                </Border>
+                <VerticalStackLayout Spacing="4" HorizontalOptions="Center" VerticalOptions="Center" IsVisible="{Binding HasQrCode}">
+                    <Border Padding="8" StrokeShape="RoundRectangle 12" BackgroundColor="White" Stroke="{StaticResource Primary}" StrokeThickness="2">
+                        <Image Source="{Binding QrCode}" WidthRequest="150" HeightRequest="150" Aspect="AspectFit" />
+                    </Border>
+                    <Label Text="Your Check-In QR Code" FontSize="12" TextColor="Gray" HorizontalOptions="Center" />
+                </VerticalStackLayout>
+            </HorizontalStackLayout>
+            <Label Text="{Binding Message}" FontSize="22" HorizontalTextAlignment="Center" />
+            <Button Text="Next Attendee" Command="{Binding NextAttendeeCommand}" FontSize="20"
+                    HorizontalOptions="Center" WidthRequest="240" />
+        </VerticalStackLayout>
+    </ScrollView>
 </ContentPage>

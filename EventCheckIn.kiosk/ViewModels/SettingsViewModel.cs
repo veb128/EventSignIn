@@ -11,6 +11,7 @@ public partial class SettingsViewModel(ServerConnection server, SyncService sync
     public ObservableCollection<FoundServer> Servers { get; } = new();
 
     [ObservableProperty] string kioskName = string.Empty;
+    [ObservableProperty] bool isAdminMode;
     [ObservableProperty] string manualAddress = string.Empty;
     [ObservableProperty] string pin = string.Empty;
     [ObservableProperty, NotifyPropertyChangedFor(nameof(CanPair))] FoundServer? selectedServer;
@@ -20,22 +21,39 @@ public partial class SettingsViewModel(ServerConnection server, SyncService sync
     [ObservableProperty] bool isPaired;
 
     public bool CanPair => SelectedServer is not null;
+    public bool HasServers => Servers.Count > 0;
+
+    public event EventHandler? HostSelected;
+
+    partial void OnSelectedServerChanged(FoundServer? value)
+    {
+        if (value is not null) HostSelected?.Invoke(this, EventArgs.Empty);
+    }
 
     public void Load()
     {
         KioskName = server.KioskName;
+        IsAdminMode = server.IsAdminMode;
         Refresh();
     }
 
     void Refresh()
     {
         IsPaired = server.IsPaired;
-        PairedWith = IsPaired ? $"Paired with {server.ServerName} ({server.BaseUrl})" : "Not paired";
+        var mode = server.IsAdminMode ? "Admin tablet" : "Check-in kiosk";
+        PairedWith = IsPaired ? $"Paired with {server.ServerName} ({server.BaseUrl}) — {mode}" : "Not paired";
     }
 
     partial void OnKioskNameChanged(string value)
     {
         if (!string.IsNullOrWhiteSpace(value)) server.KioskName = value.Trim();
+    }
+
+    partial void OnIsAdminModeChanged(bool value)
+    {
+        server.IsAdminMode = value;
+        sync.IsAdminMode = value;
+        Refresh();
     }
 
     [RelayCommand]
@@ -44,9 +62,11 @@ public partial class SettingsViewModel(ServerConnection server, SyncService sync
         IsBusy = true;
         Message = "Searching the local network…";
         Servers.Clear();
+        OnPropertyChanged(nameof(HasServers));
         try
         {
             foreach (var s in await server.DiscoverAsync()) Servers.Add(s);
+            OnPropertyChanged(nameof(HasServers));
             if (Servers.Count == 1) SelectedServer = Servers[0];
             Message = Servers.Count == 0
                 ? "No host found. Make sure this device is on the host's Wi-Fi, or type the address shown on the host."
@@ -65,6 +85,7 @@ public partial class SettingsViewModel(ServerConnection server, SyncService sync
             var s = await server.ProbeAddressAsync(ManualAddress);
             if (s is null) { Message = $"No EventCheckIn host answered at {ManualAddress}."; return; }
             if (Servers.All(x => x.BaseUrl != s.BaseUrl)) Servers.Add(s);
+            OnPropertyChanged(nameof(HasServers));
             SelectedServer = s;
             Message = "Host found. Enter the PIN to pair.";
         }
@@ -79,9 +100,19 @@ public partial class SettingsViewModel(ServerConnection server, SyncService sync
         IsBusy = true;
         try
         {
-            var (ok, error) = await server.PairAsync(SelectedServer, Pin.Trim());
+            var (ok, error) = await server.PairAsync(SelectedServer, Pin.Trim(), IsAdminMode);
             Message = ok ? "Paired! Check-ins will now sync to the host." : $"Pairing failed: {error}";
-            if (ok) { Pin = string.Empty; Refresh(); _ = sync.SyncNowAsync(); }
+            if (ok)
+            {
+                Pin = string.Empty;
+                Refresh();
+                sync.IsAdminMode = IsAdminMode;
+                sync.IsModeLocked = false;
+                sync.HasChosenStartupMode = false; // Prompt which mode to run in after pairing
+                sync.ShowSettings = false;
+                _ = sync.SyncNowAsync();
+                await Shell.Current.GoToAsync("//home");
+            }
         }
         finally { IsBusy = false; }
     }
